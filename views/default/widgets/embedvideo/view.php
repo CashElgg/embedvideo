@@ -12,5 +12,11 @@
 	      
     echo videoembed_create_embed_object($video_url);
     
+    // protect against inserting bad content
+    if (@include_once($CONFIG->path . "/vendors/kses/kses.php"))
+    {                       
+      $video_comment = kses($video_comment, $CONFIG->allowedtags, $CONFIG->allowedprotocols);
+    }   
+    
     echo $video_comment;	 
 ?>
