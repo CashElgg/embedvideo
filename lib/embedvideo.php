@@ -1,5 +1,23 @@
 <?php
 
+  /**
+   * Embed Video Library
+   * Functions to parse flash video urls and create the flash embed object
+   * 
+   * Current video sites suuported:
+   *
+   * youtube
+   * google
+   *
+   */
+
+
+  /**
+   * Public API for library
+   *
+   * @param string $url either the url or embed code
+   * @return string html video div with object embed code or error message
+   */
   function videoembed_create_embed_object($url)
   {
     
@@ -10,11 +28,11 @@
     
     if (strpos($url, 'youtube.com') != false)
     {
-      return videoembed_handle_youtube($url);
+      return videoembed_youtube_handler($url);
     }
     else if (strpos($url, 'video.google.com') != false)
     {
-      return videoembed_handle_google($url);
+      return videoembed_google_handler($url);
     }
     else if (strpos($url, 'vimeo.com') != false)
     {
@@ -46,6 +64,13 @@
     }
   }
     
+  /**
+   * generic css insert
+   *
+   * @param integer/string $width 
+   * @param integer/string $height 
+   * @return string style code for video div
+   */
   // to support more than one video we need to add unique identifier to id name
   function videoembed_add_css($width, $height)
   {    
@@ -64,9 +89,18 @@
     return $videocss;
   }
   
+  /**
+   * generic <object> creator
+   *
+   * @param string $type 
+   * @param string $url 
+   * @param integer/string $width 
+   * @param integer/string $height    
+   * @return string <object> code
+   */
   function videoembed_add_object($type, $url, $width, $height)
   {
-    // could move these into an array
+    // could move these into an array and use sprintf
     switch ($type) 
     {
       case 'youtube':
@@ -86,10 +120,16 @@
     return $videodiv;
   }
   
-  function videoembed_handle_youtube($url)
+  /**
+   * main youtube interface
+   *
+   * @param string $url 
+   * @return string css style, video div, and flash <object>
+   */
+  function videoembed_youtube_handler($url)
   {
     // this extracts the core part of the url needed for embeding
-    $videourl = videoembed_parse_youtube_url($url);
+    $videourl = videoembed_youtube_parse_url($url);
     if (!isset($videourl))
     {
       return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'youtube') . '</b></p>';  
@@ -111,12 +151,18 @@
     return $embed_object;  
   }
   
-  function videoembed_parse_youtube_url($url)
+  /**
+   * parse youtube url
+   *
+   * @param string $url 
+   * @return string subdomain.youtube.com/v/hash
+   */
+  function videoembed_youtube_parse_url($url)
   {    
     // separate parsing embed url
     if (strpos($url, 'embed') != false)
     {
-      return parse_youtube_embed_url($url);
+      return videoembed_youtube_parse_embed($url);
     }
     
     if (strpos($url, 'feature=hd') != false)
@@ -151,8 +197,14 @@
   }
 
 
+  /**
+   * parse youtube embed code
+   *
+   * @param string $url 
+   * @return string subdomain.youtube.com/v/hash
+   */
   // how about other languages??
-  function parse_youtube_embed_url($url)
+  function videoembed_youtube_parse_embed($url)
   {
     if (strpos($url, 'width="480"') != false)
     {
@@ -175,10 +227,16 @@
   }
   
   
-  function videoembed_handle_google($url)
+  /**
+   * main google interface
+   *
+   * @param string $url 
+   * @return string css style, video div, and flash <object>
+   */
+  function videoembed_google_handler($url)
   {
     // this extracts the core part of the url needed for embeding
-    $videourl = videoembed_parse_google_url($url);
+    $videourl = videoembed_google_parse_url($url);
     if (!isset($videourl))
     {
       return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'google') . '</b></p>';  
@@ -200,12 +258,18 @@
     return $embed_object;   
   }
 
-  function videoembed_parse_google_url($url)
+  /**
+   * parse google url
+   *
+   * @param string $url 
+   * @return string hash
+   */
+  function videoembed_google_parse_url($url)
   {        
     // separate parsing embed url
     if (strpos($url, 'embed') != false)
     {
-      return parse_google_embed_url($url);
+      return videoembed_google_parse_embed($url);
     }
         
     if (!preg_match('/(http:\/\/)(video.google.com\/videoplay)(.*)/', $url, $matches))
@@ -231,7 +295,13 @@
   }
 
 
-  function parse_google_embed_url($url)
+  /**
+   * parse google embed code
+   *
+   * @param string $url 
+   * @return string hash
+   */
+  function videoembed_google_parse_embed($url)
   {
 
     if (!preg_match('/(src=")(http:\/\/video.google.com\/googleplayer.swf\?docid=)([0-9]*)(&hl=[a-zA-Z]{2})(.*")/', $url, $matches))
