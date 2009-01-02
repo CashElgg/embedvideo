@@ -9,8 +9,8 @@
     	 
     $video_url = $vars['entity']->url;
 	  $video_comment = $vars['entity']->comment;
-	      
-    echo videoembed_create_embed_object($video_url);
+	  
+    echo videoembed_create_embed_object($video_url, $vars['entity']->getGUID());
     
     // protect against inserting bad content
     if (@include_once($CONFIG->path . "/vendors/kses/kses.php"))

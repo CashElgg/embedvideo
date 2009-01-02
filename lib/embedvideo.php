@@ -16,9 +16,10 @@
    * Public API for library
    *
    * @param string $url either the url or embed code
+   * @param integer $guid unique identifier of the widget
    * @return string html video div with object embed code or error message
    */
-  function videoembed_create_embed_object($url)
+  function videoembed_create_embed_object($url, $guid)
   {
     
     if (!isset($url))
@@ -28,11 +29,11 @@
     
     if (strpos($url, 'youtube.com') != false)
     {
-      return videoembed_youtube_handler($url);
+      return videoembed_youtube_handler($url, $guid);
     }
     else if (strpos($url, 'video.google.com') != false)
     {
-      return videoembed_google_handler($url);
+      return videoembed_google_handler($url, $guid);
     }
     else if (strpos($url, 'vimeo.com') != false)
     {
@@ -67,16 +68,16 @@
   /**
    * generic css insert
    *
+   * @param integer $guid unique identifier of the widget
    * @param integer/string $width 
    * @param integer/string $height 
    * @return string style code for video div
    */
-  // to support more than one video we need to add unique identifier to id name
-  function videoembed_add_css($width, $height)
+  function videoembed_add_css($guid, $width, $height)
   {    
     $videocss = "
       <style type=\"text/css\">
-        #embedvideo { 
+        #embedvideo{$guid} { 
           height: {$height}px;
           width: {$width}px; 
           padding:0; 
@@ -94,29 +95,28 @@
    *
    * @param string $type 
    * @param string $url 
+   * @param integer $guid unique identifier of the widget
    * @param integer/string $width 
    * @param integer/string $height    
    * @return string <object> code
    */
-  function videoembed_add_object($type, $url, $width, $height)
+  function videoembed_add_object($type, $url, $guid, $width, $height)
   {
+    $videodiv = "<div id=\"embedvideo{$guid}\">";
+    
     // could move these into an array and use sprintf
     switch ($type) 
     {
       case 'youtube':
-        $videodiv = "
-          <div id=\"embedvideo\">
-            <object width=\"$width\" height=\"$height\"><param name=\"movie\" value=\"http://{$url}&hl=en&fs=1\"></param><param name=\"allowFullScreen\" value=\"true\"></param><embed src=\"http://{$url}&hl=en&fs=1\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" width=\"$width\" height=\"$height\"></embed></object>
-          </div>";
+        $videodiv .= "<object width=\"$width\" height=\"$height\"><param name=\"movie\" value=\"http://{$url}&hl=en&fs=1\"></param><param name=\"allowFullScreen\" value=\"true\"></param><embed src=\"http://{$url}&hl=en&fs=1\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" width=\"$width\" height=\"$height\"></embed></object>";
         break;
       case 'google':
-        $videodiv = "
-          <div id=\"embedvideo\">
-            <embed id=\"VideoPlayback\" src=\"http://video.google.com/googleplayer.swf?docid={$url}&hl=en&fs=true\" style=\"width:{$width}px;height:{$height}px\" allowFullScreen=\"true\" allowScriptAccess=\"always\" type=\"application/x-shockwave-flash\"> </embed>
-          </div>";
+        $videodiv .= "<embed id=\"VideoPlayback\" src=\"http://video.google.com/googleplayer.swf?docid={$url}&hl=en&fs=true\" style=\"width:{$width}px;height:{$height}px\" allowFullScreen=\"true\" allowScriptAccess=\"always\" type=\"application/x-shockwave-flash\"> </embed>";
         break;       
     }
               
+    $videodiv .= "</div>";
+
     return $videodiv;
   }
   
@@ -124,9 +124,10 @@
    * main youtube interface
    *
    * @param string $url 
+   * @param integer $guid unique identifier of the widget
    * @return string css style, video div, and flash <object>
    */
-  function videoembed_youtube_handler($url)
+  function videoembed_youtube_handler($url, $guid)
   {
     // this extracts the core part of the url needed for embeding
     $videourl = videoembed_youtube_parse_url($url);
@@ -144,9 +145,9 @@
     $videoheight = round(319 * $videowidth / 425) + 25;
                 
     // add css inline for now
-    $embed_object = videoembed_add_css($videowidth, $videoheight);
+    $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
   
-    $embed_object .= videoembed_add_object('youtube', $videourl, $videowidth, $videoheight);
+    $embed_object .= videoembed_add_object('youtube', $videourl, $guid, $videowidth, $videoheight);
     
     return $embed_object;  
   }
@@ -231,9 +232,10 @@
    * main google interface
    *
    * @param string $url 
+   * @param integer $guid unique identifier of the widget
    * @return string css style, video div, and flash <object>
    */
-  function videoembed_google_handler($url)
+  function videoembed_google_handler($url, $guid)
   {
     // this extracts the core part of the url needed for embeding
     $videourl = videoembed_google_parse_url($url);
@@ -251,9 +253,9 @@
     $videoheight = round(299 * $videowidth / 400) + 27;
                 
     // add css inline for now
-    $embed_object = videoembed_add_css($videowidth, $videoheight);
+    $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
   
-    $embed_object .= videoembed_add_object('google', $videourl, $videowidth, $videoheight);
+    $embed_object .= videoembed_add_object('google', $videourl, $guid, $videowidth, $videoheight);
     
     return $embed_object;   
   }
