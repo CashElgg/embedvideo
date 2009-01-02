@@ -5,46 +5,44 @@
     
     if (!isset($url))
     {
-      return '<p>no video set</p>';
+      return '<p><b>' . elgg_echo('embedvideo:novideo') . '</b></p>';
     }
     
     if (strpos($url, 'youtube.com') != false)
     {
-      //echo "youtube";
       return videoembed_handle_youtube($url);
     }
     else if (strpos($url, 'video.google.com') != false)
     {
-      //echo "google";
       return videoembed_handle_google($url);
     }
     else if (strpos($url, 'vimeo.com') != false)
     {
-      return '<p>not handling vimeo videos yet</p>';
+      return '<p><b>not handling vimeo videos yet</b></p>';
     }
     else if (strpos($url, 'dailymotion.com') != false)
     {
-      return '<p>not handling dailymotion.com videos yet</p>';
+      return '<p><b>not handling dailymotion.com videos yet</b></p>';
     }    
     else if (strpos($url, 'veoh.com') != false)
     {
-      return '<p>not handling veoh.com videos yet</p>';
+      return '<p><b>not handling veoh.com videos yet</b></p>';
     }    
     else if (strpos($url, 'viddler.com') != false)
     {
-      return '<p>not handling viddler.com videos yet</p>';
+      return '<p><b>not handling viddler.com videos yet</b></p>';
     }    
     else if (strpos($url, 'metacafe.com') != false)
     {
-      return '<p>not handling metacafe.com videos yet</p>';
+      return '<p><b>not handling metacafe.com videos yet</b></p>';
     }        
     else if (strpos($url, 'blip.tv') != false)
     {
-      return '<p>not handling blip.tv videos yet</p>';
+      return '<p><b>not handling blip.tv videos yet</b></p>';
     }
     else
     {
-      return '<p>unrecognized video site</p>';
+      return '<p><b>' . elgg_echo('embedvideo:unrecognized') . '</b></p>';
     }
   }
     
@@ -94,7 +92,7 @@
     $videourl = videoembed_parse_youtube_url($url);
     if (!isset($videourl))
     {
-      return '<p>unable to parse youtube url</p>';  
+      return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'youtube') . '</b></p>';  
     }
     
     // set video width and height
@@ -183,7 +181,7 @@
     $videourl = videoembed_parse_google_url($url);
     if (!isset($videourl))
     {
-      return '<p>unable to parse google url</p>';  
+      return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'google') . '</b></p>';  
     }
     
     // set video width and height
@@ -212,7 +210,7 @@
         
     if (!preg_match('/(http:\/\/)(video.google.com\/videoplay)(.*)/', $url, $matches))
     {
-      echo "malformed google url";
+      //echo "malformed google url";
       return;    
     }
     
@@ -222,7 +220,7 @@
     // forces rest of url to start with "?docid=", followed by hash, and rest of options start with &    
     if (!preg_match('/^(\?docid=)([0-9]*)(&.*)?$/',$path, $matches))
     {
-      echo "bad hash";
+      //echo "bad hash";
       return;        
     }
     
@@ -233,7 +231,6 @@
   }
 
 
-  // how about other languages??
   function parse_google_embed_url($url)
   {
 
