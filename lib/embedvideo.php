@@ -282,7 +282,7 @@
     //echo $path; 
    
     // forces rest of url to start with "?docid=", followed by hash, and rest of options start with &    
-    if (!preg_match('/^(\?docid=)([0-9]*)(&.*)?$/',$path, $matches))
+    if (!preg_match('/^(\?docid=)([0-9-]*)(&.*)?$/',$path, $matches))
     {
       //echo "bad hash";
       return;        
@@ -304,7 +304,7 @@
   function videoembed_google_parse_embed($url)
   {
 
-    if (!preg_match('/(src=")(http:\/\/video.google.com\/googleplayer.swf\?docid=)([0-9]*)(&hl=[a-zA-Z]{2})(.*")/', $url, $matches))
+    if (!preg_match('/(src=")(http:\/\/video.google.com\/googleplayer.swf\?docid=)([0-9-]*)(&hl=[a-zA-Z]{2})(.*")/', $url, $matches))
     {
       //echo "malformed embed google url";
       return;    
