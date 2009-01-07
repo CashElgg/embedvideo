@@ -185,7 +185,7 @@
     // it is possible to get urls like this http://jp.youtube.com/watch?feature=rec-HM-r2&v=hbCm1q45uQk 
 
     // forces rest of url to start with "watch?v=", followed by hash, and rest of options start with &    
-    if (!preg_match('/^(watch\?v=)([a-zA-Z0-9_]*)(&.*)?$/',$path, $matches))
+    if (!preg_match('/^(watch\?v=)([a-zA-Z0-9_-]*)(&.*)?$/',$path, $matches))
     {
       //echo "bad hash";
       return;        
@@ -212,7 +212,7 @@
       // this is high def with a different aspect ratio
     }
 
-    if (!preg_match('/(value=")(http:\/\/)([a-zA-Z]{2,3}\.)(youtube.com\/)(v\/)([a-zA-Z0-9_]*)(&hl=[a-zA-Z]{2})(.*")/', $url, $matches))
+    if (!preg_match('/(value=")(http:\/\/)([a-zA-Z]{2,3}\.)(youtube.com\/)(v\/)([a-zA-Z0-9_-]*)(&hl=[a-zA-Z]{2})(.*")/', $url, $matches))
     {
       //echo "malformed embed youtube url";
       return;    
