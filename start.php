@@ -1,13 +1,13 @@
 <?php
 
   /**
-   * Embedded Video Widget
+   * Embedded Video Plugin
    * 
    */
   
   function embedvideo_init() {
   
-    add_widget_type('embedvideo', 'Embed Video', elgg_echo('embedvideo:description'), 'profile', true);
+    add_widget_type('embedvideo', elgg_echo('embedvideo:widget'), elgg_echo('embedvideo:description'), 'profile', true);
       
   }
     
