@@ -40,9 +40,9 @@
     {
       return videoembed_vimeo_handler($url, $guid);
     }
-    else if (strpos($url, 'dailymotion.com') != false)
+    else if (strpos($url, 'metacafe.com') != false)
     {
-      return '<p><b>not handling dailymotion.com videos yet</b></p>';
+      return videoembed_metacafe_handler($url, $guid);
     }    
     else if (strpos($url, 'veoh.com') != false)
     {
@@ -52,9 +52,9 @@
     {
       return '<p><b>not handling viddler.com videos yet</b></p>';
     }    
-    else if (strpos($url, 'metacafe.com') != false)
+    else if (strpos($url, 'dailymotion.com') != false)
     {
-      return '<p><b>not handling metacafe.com videos yet</b></p>';
+      return '<p><b>not handling dailymotion.com videos yet</b></p>';
     }        
     else if (strpos($url, 'blip.tv') != false)
     {
@@ -116,6 +116,9 @@
         break;
       case 'vimeo':
         $videodiv .= "<object width=\"$width\" height=\"$height\"><param name=\"allowfullscreen\" value=\"true\" /><param name=\"allowscriptaccess\" value=\"always\" /><param name=\"movie\" value=\"http://vimeo.com/moogaloop.swf?clip_id={$url}&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1\" /><embed src=\"http://vimeo.com/moogaloop.swf?clip_id={$url}&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" allowscriptaccess=\"always\" width=\"$width\" height=\"$height\"></embed></object>";
+        break;
+      case 'metacafe':
+        $videodiv .= "<embed src=\"http://www.metacafe.com/fplayer/{$url}.swf\" width=\"$width\" height=\"$height\" wmode=\"transparent\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\" type=\"application/x-shockwave-flash\"></embed>";
         break;       
     }
               
@@ -416,5 +419,86 @@
     //echo $hash;
             
     return $hash;  
-  }      
+  }
+  
+  /**
+   * main metacafe interface
+   *
+   * @param string $url 
+   * @param integer $guid unique identifier of the widget
+   * @return string css style, video div, and flash <object>
+   */
+  function videoembed_metacafe_handler($url, $guid)
+  {
+    // this extracts the core part of the url needed for embeding
+    $videourl = videoembed_metacafe_parse_url($url);
+    if (!isset($videourl))
+    {
+      return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'metacafe') . '</b></p>';  
+    }
+    
+    // set video width and height
+    $videowidth = get_plugin_setting('videowidth','embedvideo');
+    // make sure width is a number and greater than zero
+    if (!isset($videowidth) || !is_numeric($videowidth) || $videowidth < 0)
+      $videowidth = 284;
+    // 27 is the height of the control bar which doesn't scale
+    $videoheight = round(295 * $videowidth / 400) + 40;
+                
+    // add css inline for now
+    $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
+  
+    $embed_object .= videoembed_add_object('metacafe', $videourl, $guid, $videowidth, $videoheight);
+    
+    return $embed_object;   
+  }
+
+  /**
+   * parse metacafe url
+   *
+   * @param string $url 
+   * @return string hash
+   */
+  function videoembed_metacafe_parse_url($url)
+  {        
+    // separate parsing embed url
+    if (strpos($url, 'embed') != false)
+    {
+      return videoembed_metacafe_parse_embed($url);
+    }
+    
+    if (!preg_match('/(http:\/\/)(www.)?(metacafe.com\/watch\/)([0-9]*)(\/[0-9a-zA-Z_-]*)(\/)/', $url, $matches))
+    {
+      //echo "malformed metacafe group url";
+      return;    
+    }
+          
+    $hash = $matches[4] . $matches[5];
+        
+    //echo $hash; 
+       
+    return $hash;
+  }
+
+  /**
+   * parse metacafe embed code
+   *
+   * @param string $url 
+   * @return string hash
+   */
+  function videoembed_metacafe_parse_embed($url)
+  {
+    //<embed src="http://www.metacafe.com/fplayer/2235731/rat_loves_cat.swf" width="400" height="345" wmode="transparent" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash"> </embed><br><font size = 1><a href="http://www.metacafe.com/watch/2235731/rat_loves_cat/">Rat Loves 
+    if (!preg_match('/(src="http:\/\/)(www.)?(metacafe.com\/fplayer\/)([0-9]*)(\/[0-9a-zA-Z_-]*)(.swf)/', $url, $matches))
+    {
+      //echo "malformed embed vimeo url";
+      return;    
+    }
+
+    $hash   = $matches[4] . $matches[5];
+    //echo $hash;
+            
+    return $hash;  
+  }
+          
 ?>
