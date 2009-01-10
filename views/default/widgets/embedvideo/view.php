@@ -9,7 +9,7 @@
     	 
     $video_url = $vars['entity']->url;
 	  $video_comment = $vars['entity']->comment;
-	  $video_title = $vars['entity']->title;
+	  $video_title = $vars['entity']->videotitle;
 	  
     if (@include_once($CONFIG->path . "/vendors/kses/kses.php"))
     {                       

@@ -19,7 +19,7 @@
       if ($object->handler == 'embedvideo')
       {
         // only log when url has been changed
-        if ($object->old_url === $object->url)
+        if (!isset($object->url) || $object->url_hash == md5($object->url))
           return false;
       } 
     }
