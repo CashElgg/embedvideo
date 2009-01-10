@@ -3,9 +3,13 @@
   /**
 	 * embed video widget edit page 
 	 */
+	 
+	global $CONFIG;
 
+  $sites_supported = $CONFIG->wwwroot . 'mod/embedvideo/graphics/sites_supported.png';
+  
 ?>
-  <p>Youtube and Google videos are supported.</p>
+  <div style='text-align: center; margin:0 0 10px 0;'><img src="<?php echo $sites_supported; ?>" alt="<?php echo elgg_echo('embedvideo:sites'); ?>" title="<?php echo elgg_echo('embedvideo:sites'); ?>"/></div>
   <p>
     <?php echo elgg_echo('embedvideo:url'); ?><br />
     <input onclick="this.select();" type="text" name="params[url]" value="<?php echo htmlentities($vars['entity']->url); ?>" class="input-text" />
