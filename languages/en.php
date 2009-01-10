@@ -14,6 +14,9 @@
 		'embedvideo:unrecognized' => 'Unrecognized video site',
 		'embedvideo:parseerror' => 'Unable to parse %s url',
 		
+		'embedvideo:river:created' => "%s added the video widget.",
+	  'embedvideo:river:updated' => "%s updated their video widget.",
+		
 	);
 					
 	add_translation("en",$english);
