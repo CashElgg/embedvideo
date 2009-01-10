@@ -4,10 +4,11 @@
    * Embed Video Library
    * Functions to parse flash video urls and create the flash embed object
    * 
-   * Current video sites suuported:
+   * Current video sites supported:
    *
    * youtube
    * google
+   * vimeo
    *
    */
 
@@ -37,7 +38,7 @@
     }
     else if (strpos($url, 'vimeo.com') != false)
     {
-      return '<p><b>not handling vimeo videos yet</b></p>';
+      return videoembed_vimeo_handler($url, $guid);
     }
     else if (strpos($url, 'dailymotion.com') != false)
     {
@@ -112,6 +113,9 @@
         break;
       case 'google':
         $videodiv .= "<embed id=\"VideoPlayback\" src=\"http://video.google.com/googleplayer.swf?docid={$url}&hl=en&fs=true\" style=\"width:{$width}px;height:{$height}px\" allowFullScreen=\"true\" allowScriptAccess=\"always\" type=\"application/x-shockwave-flash\"> </embed>";
+        break;
+      case 'vimeo':
+        $videodiv .= "<object width=\"$width\" height=\"$height\"><param name=\"allowfullscreen\" value=\"true\" /><param name=\"allowscriptaccess\" value=\"always\" /><param name=\"movie\" value=\"http://vimeo.com/moogaloop.swf?clip_id={$url}&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1\" /><embed src=\"http://vimeo.com/moogaloop.swf?clip_id={$url}&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" allowscriptaccess=\"always\" width=\"$width\" height=\"$height\"></embed></object>";
         break;       
     }
               
@@ -320,5 +324,97 @@
         
     return $hash;  
   }
-      
+
+  /**
+   * main vimeo interface
+   *
+   * @param string $url 
+   * @param integer $guid unique identifier of the widget
+   * @return string css style, video div, and flash <object>
+   */
+  function videoembed_vimeo_handler($url, $guid)
+  {
+    // this extracts the core part of the url needed for embeding
+    $videourl = videoembed_vimeo_parse_url($url);
+    if (!isset($videourl))
+    {
+      return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'vimeo') . '</b></p>';  
+    }
+    
+    // set video width and height
+    $videowidth = get_plugin_setting('videowidth','embedvideo');
+    // make sure width is a number and greater than zero
+    if (!isset($videowidth) || !is_numeric($videowidth) || $videowidth < 0)
+      $videowidth = 284;
+    // 27 is the height of the control bar which doesn't scale
+    $videoheight = round(300 * $videowidth / 400);
+                
+    // add css inline for now
+    $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
+  
+    $embed_object .= videoembed_add_object('vimeo', $videourl, $guid, $videowidth, $videoheight);
+    
+    return $embed_object;   
+  }
+
+  /**
+   * parse vimeo url
+   *
+   * @param string $url 
+   * @return string hash
+   */
+  function videoembed_vimeo_parse_url($url)
+  {        
+    // separate parsing embed url
+    if (strpos($url, 'embed') != false)
+    {
+      return videoembed_vimeo_parse_embed($url);
+    }
+        
+    if (strpos($url, 'groups') != false)
+    {
+      if (!preg_match('/(http:\/\/)(www.)?(vimeo.com\/groups)(.*)(\/videos\/)(.*)/', $url, $matches))
+      {
+        //echo "malformed vimeo group url";
+        return;    
+      }
+          
+      $hash = $matches[6];
+    }
+    else
+    {
+      if (!preg_match('/(http:\/\/)(www.)?(vimeo.com\/)(.*)/', $url, $matches))
+      {
+        //echo "malformed vimeo url";
+        return;    
+      }
+          
+      $hash = $matches[4];
+    }
+        
+    //echo $hash; 
+       
+    return $hash;
+  }
+
+  /**
+   * parse vimeo embed code
+   *
+   * @param string $url 
+   * @return string hash
+   */
+  function videoembed_vimeo_parse_embed($url)
+  {
+
+    if (!preg_match('/(value="http:\/\/vimeo.com\/moogaloop.swf\?clip_id=)([0-9-]*)(&)(.*" \/)/', $url, $matches))
+    {
+      //echo "malformed embed vimeo url";
+      return;    
+    }
+
+    $hash   = $matches[2];
+    //echo $hash;
+            
+    return $hash;  
+  }      
 ?>
