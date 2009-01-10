@@ -12,6 +12,11 @@
   </p>
   
   <p>
+    <?php echo elgg_echo('embedvideo:title'); ?><br />
+    <textarea class="input-textarea" name="params[title]" style="height: 20px;" ><?php echo htmlentities($vars['entity']->title); ?></textarea>
+  </p>  
+
+  <p>
     <?php echo elgg_echo('embedvideo:comment'); ?> (html tags are allowed)<br />
     <textarea class="input-textarea" name="params[comment]" style="height: 100px;" ><?php echo htmlentities($vars['entity']->comment); ?></textarea>
   </p>  
