@@ -10,7 +10,13 @@
    * google
    * vimeo
    * metacafe
+   * veoh
    *
+   * todo
+   * ------------
+   * clean up display related code and move to css for easier skinning
+   * look into creating embed code that validates as xhtml
+   * 
    */
 
 
@@ -123,6 +129,7 @@
         $videodiv .= "<embed src=\"http://www.metacafe.com/fplayer/{$url}.swf\" width=\"$width\" height=\"$height\" wmode=\"transparent\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\" type=\"application/x-shockwave-flash\"></embed>";
         break;
       case 'veoh':
+        $videodiv .= "<embed src=\"http://www.veoh.com/veohplayer.swf?permalinkId={$url}&player=videodetailsembedded&videoAutoPlay=0\" allowFullScreen=\"true\" width=\"$width\" height=\"$height\" bgcolor=\"#FFFFFF\" type=\"application/x-shockwave-flash\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\"></embed>";
         break;       
     }
               
@@ -521,7 +528,7 @@
       return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'veoh') . '</b></p>';  
     }
     
-    videoembed_calc_size($videowidth, $videoheight, 400/295, 40);
+    videoembed_calc_size($videowidth, $videoheight, 410/311, 30);
                     
     // add css inline for now
     $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
@@ -547,13 +554,13 @@
     
     if (!preg_match('/(http:\/\/www\.veoh\.com\/videos\/)([0-9a-zA-Z]*)/', $url, $matches))
     {
-      echo "malformed veoh group url";
+      //echo "malformed veoh group url";
       return;    
     }
           
     $hash = $matches[2];
         
-    echo $hash; 
+    //echo $hash; 
        
     return $hash;
   }
@@ -566,13 +573,13 @@
    */
   function videoembed_veoh_parse_embed($url)
   {
-    if (!preg_match('/(src="http:\/\/)(www.)?(veoh.com\/fplayer\/)([0-9]*)(\/[0-9a-zA-Z_-]*)(.swf)/', $url, $matches))
+    if (!preg_match('/(src="http:\/\/)(www.)?(veoh\.com\/veohplayer.swf\?permalinkId=)([a-zA-Z0-9]*)/', $url, $matches))
     {
       //echo "malformed embed veoh url";
       return;    
     }
 
-    $hash   = $matches[4] . $matches[5];
+    $hash   = $matches[4];
     //echo $hash;
             
     return $hash;  
