@@ -48,7 +48,7 @@
     }    
     else if (strpos($url, 'veoh.com') != false)
     {
-      return '<p><b>not handling veoh.com videos yet</b></p>';
+      return videoembed_veoh_handler($url, $guid, $videowidth);
     }    
     else if (strpos($url, 'viddler.com') != false)
     {
@@ -199,7 +199,7 @@
     
     // This provides some security against inserting bad content.
     // Divides url into http://, www or localization, domain name, path.
-    if (!preg_match('/(http:\/\/)([a-zA-Z]{2,3}\.)(youtube.com\/)(.*)/', $url, $matches))
+    if (!preg_match('/(http:\/\/)([a-zA-Z]{2,3}\.)(youtube\.com\/)(.*)/', $url, $matches))
     {
       //echo "malformed youtube url";
       return;    
@@ -238,7 +238,7 @@
       // this is high def with a different aspect ratio
     }
 
-    if (!preg_match('/(value=")(http:\/\/)([a-zA-Z]{2,3}\.)(youtube.com\/)(v\/)([a-zA-Z0-9_-]*)(&hl=[a-zA-Z]{2})(.*")/', $url, $matches))
+    if (!preg_match('/(value=")(http:\/\/)([a-zA-Z]{2,3}\.)(youtube\.com\/)(v\/)([a-zA-Z0-9_-]*)(&hl=[a-zA-Z]{2})(.*")/', $url, $matches))
     {
       //echo "malformed embed youtube url";
       return;    
@@ -295,7 +295,7 @@
       return videoembed_google_parse_embed($url);
     }
         
-    if (!preg_match('/(http:\/\/)(video.google.com\/videoplay)(.*)/', $url, $matches))
+    if (!preg_match('/(http:\/\/)(video\.google\.com\/videoplay)(.*)/', $url, $matches))
     {
       //echo "malformed google url";
       return;    
@@ -327,7 +327,7 @@
   function videoembed_google_parse_embed($url)
   {
 
-    if (!preg_match('/(src=")(http:\/\/video.google.com\/googleplayer.swf\?docid=)([0-9-]*)(&hl=[a-zA-Z]{2})(.*")/', $url, $matches))
+    if (!preg_match('/(src=")(http:\/\/video\.google\.com\/googleplayer\.swf\?docid=)([0-9-]*)(&hl=[a-zA-Z]{2})(.*")/', $url, $matches))
     {
       //echo "malformed embed google url";
       return;    
@@ -386,7 +386,7 @@
         
     if (strpos($url, 'groups') != false)
     {
-      if (!preg_match('/(http:\/\/)(www.)?(vimeo.com\/groups)(.*)(\/videos\/)(.*)/', $url, $matches))
+      if (!preg_match('/(http:\/\/)(www\.)?(vimeo\.com\/groups)(.*)(\/videos\/)(.*)/', $url, $matches))
       {
         //echo "malformed vimeo group url";
         return;    
@@ -418,7 +418,7 @@
    */
   function videoembed_vimeo_parse_embed($url)
   {
-    if (!preg_match('/(value="http:\/\/vimeo.com\/moogaloop.swf\?clip_id=)([0-9-]*)(&)(.*" \/)/', $url, $matches))
+    if (!preg_match('/(value="http:\/\/vimeo\.com\/moogaloop\.swf\?clip_id=)([0-9-]*)(&)(.*" \/)/', $url, $matches))
     {
       //echo "malformed embed vimeo url";
       return;    
@@ -471,7 +471,7 @@
       return videoembed_metacafe_parse_embed($url);
     }
     
-    if (!preg_match('/(http:\/\/)(www.)?(metacafe.com\/watch\/)([0-9]*)(\/[0-9a-zA-Z_-]*)(\/)/', $url, $matches))
+    if (!preg_match('/(http:\/\/)(www\.)?(metacafe\.com\/watch\/)([0-9]*)(\/[0-9a-zA-Z_-]*)(\/)/', $url, $matches))
     {
       //echo "malformed metacafe group url";
       return;    
@@ -492,7 +492,7 @@
    */
   function videoembed_metacafe_parse_embed($url)
   {
-    if (!preg_match('/(src="http:\/\/)(www.)?(metacafe.com\/fplayer\/)([0-9]*)(\/[0-9a-zA-Z_-]*)(.swf)/', $url, $matches))
+    if (!preg_match('/(src="http:\/\/)(www\.)?(metacafe\.com\/fplayer\/)([0-9]*)(\/[0-9a-zA-Z_-]*)(.swf)/', $url, $matches))
     {
       //echo "malformed embed metacafe url";
       return;    
@@ -503,5 +503,79 @@
             
     return $hash;  
   }
-         
+
+  /**
+   * main veoh interface
+   *
+   * @param string $url 
+   * @param integer $guid unique identifier of the widget
+   * @param integer $videowidth  optional override of admin set width
+   * @return string css style, video div, and flash <object>
+   */
+  function videoembed_veoh_handler($url, $guid, $videowidth)
+  {
+    // this extracts the core part of the url needed for embeding
+    $videourl = videoembed_veoh_parse_url($url);
+    if (!isset($videourl))
+    {
+      return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'veoh') . '</b></p>';  
+    }
+    
+    videoembed_calc_size($videowidth, $videoheight, 400/295, 40);
+                    
+    // add css inline for now
+    $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
+  
+    $embed_object .= videoembed_add_object('veoh', $videourl, $guid, $videowidth, $videoheight);
+    
+    return $embed_object;   
+  }
+
+  /**
+   * parse veoh url
+   *
+   * @param string $url 
+   * @return string hash
+   */
+  function videoembed_veoh_parse_url($url)
+  {        
+    // separate parsing embed url
+    if (strpos($url, 'embed') != false)
+    {
+      return videoembed_veoh_parse_embed($url);
+    }
+    
+    if (!preg_match('/(http:\/\/www\.veoh\.com\/videos\/)([0-9a-zA-Z]*)/', $url, $matches))
+    {
+      echo "malformed veoh group url";
+      return;    
+    }
+          
+    $hash = $matches[2];
+        
+    echo $hash; 
+       
+    return $hash;
+  }
+
+  /**
+   * parse veoh embed code
+   *
+   * @param string $url 
+   * @return string hash
+   */
+  function videoembed_veoh_parse_embed($url)
+  {
+    if (!preg_match('/(src="http:\/\/)(www.)?(veoh.com\/fplayer\/)([0-9]*)(\/[0-9a-zA-Z_-]*)(.swf)/', $url, $matches))
+    {
+      //echo "malformed embed veoh url";
+      return;    
+    }
+
+    $hash   = $matches[4] . $matches[5];
+    //echo $hash;
+            
+    return $hash;  
+  } 
+           
 ?>
