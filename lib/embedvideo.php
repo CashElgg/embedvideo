@@ -9,6 +9,7 @@
    * youtube
    * google
    * vimeo
+   * metacafe
    *
    */
 
@@ -18,9 +19,10 @@
    *
    * @param string $url either the url or embed code
    * @param integer $guid unique identifier of the widget
+   * @param integer $videowidth override the admin set default width
    * @return string html video div with object embed code or error message
    */
-  function videoembed_create_embed_object($url, $guid)
+  function videoembed_create_embed_object($url, $guid, $videowidth=0)
   {
     
     if (!isset($url))
@@ -30,19 +32,19 @@
     
     if (strpos($url, 'youtube.com') != false)
     {
-      return videoembed_youtube_handler($url, $guid);
+      return videoembed_youtube_handler($url, $guid, $videowidth);
     }
     else if (strpos($url, 'video.google.com') != false)
     {
-      return videoembed_google_handler($url, $guid);
+      return videoembed_google_handler($url, $guid, $videowidth);
     }
     else if (strpos($url, 'vimeo.com') != false)
     {
-      return videoembed_vimeo_handler($url, $guid);
+      return videoembed_vimeo_handler($url, $guid, $videowidth);
     }
     else if (strpos($url, 'metacafe.com') != false)
     {
-      return videoembed_metacafe_handler($url, $guid);
+      return videoembed_metacafe_handler($url, $guid, $videowidth);
     }    
     else if (strpos($url, 'veoh.com') != false)
     {
@@ -119,6 +121,8 @@
         break;
       case 'metacafe':
         $videodiv .= "<embed src=\"http://www.metacafe.com/fplayer/{$url}.swf\" width=\"$width\" height=\"$height\" wmode=\"transparent\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\" type=\"application/x-shockwave-flash\"></embed>";
+        break;
+      case 'veoh':
         break;       
     }
               
@@ -128,13 +132,34 @@
   }
   
   /**
+   * calculate the video width and size
+   *
+   * @param $width 
+   * @param $height 
+   * @param $toolbar_height
+   */
+  function videoembed_calc_size(&$width, &$height, $aspect_ratio, $toolbar_height)
+  {
+    // set video width and height
+    if (!$width)
+      $width = get_plugin_setting('videowidth', 'embedvideo');
+
+    // make sure width is a number and greater than zero
+    if (!isset($width) || !is_numeric($width) || $width < 0)
+      $width = 284;
+
+    $height = round($width / $aspect_ratio) + $toolbar_height;  
+  }
+  
+  /**
    * main youtube interface
    *
    * @param string $url 
    * @param integer $guid unique identifier of the widget
+   * @param integer $videowidth  optional override of admin set width
    * @return string css style, video div, and flash <object>
    */
-  function videoembed_youtube_handler($url, $guid)
+  function videoembed_youtube_handler($url, $guid, $videowidth)
   {
     // this extracts the core part of the url needed for embeding
     $videourl = videoembed_youtube_parse_url($url);
@@ -143,14 +168,8 @@
       return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'youtube') . '</b></p>';  
     }
     
-    // set video width and height
-    $videowidth = get_plugin_setting('videowidth','embedvideo');
-    // make sure width is a number and greater than zero
-    if (!isset($videowidth) || !is_numeric($videowidth) || $videowidth < 0)
-      $videowidth = 284;
-    // 25 is the height of the control bar which doesn't scale
-    $videoheight = round(319 * $videowidth / 425) + 25;
-                
+    videoembed_calc_size($videowidth, $videoheight, 425/320, 25);
+                    
     // add css inline for now
     $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
   
@@ -240,9 +259,10 @@
    *
    * @param string $url 
    * @param integer $guid unique identifier of the widget
+   * @param integer $videowidth  optional override of admin set width
    * @return string css style, video div, and flash <object>
    */
-  function videoembed_google_handler($url, $guid)
+  function videoembed_google_handler($url, $guid, $videowidth)
   {
     // this extracts the core part of the url needed for embeding
     $videourl = videoembed_google_parse_url($url);
@@ -251,13 +271,7 @@
       return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'google') . '</b></p>';  
     }
     
-    // set video width and height
-    $videowidth = get_plugin_setting('videowidth','embedvideo');
-    // make sure width is a number and greater than zero
-    if (!isset($videowidth) || !is_numeric($videowidth) || $videowidth < 0)
-      $videowidth = 284;
-    // 27 is the height of the control bar which doesn't scale
-    $videoheight = round(299 * $videowidth / 400) + 27;
+    videoembed_calc_size($videowidth, $videoheight, 400/300, 27);
                 
     // add css inline for now
     $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
@@ -333,9 +347,10 @@
    *
    * @param string $url 
    * @param integer $guid unique identifier of the widget
+   * @param integer $videowidth  optional override of admin set width
    * @return string css style, video div, and flash <object>
    */
-  function videoembed_vimeo_handler($url, $guid)
+  function videoembed_vimeo_handler($url, $guid, $videowidth)
   {
     // this extracts the core part of the url needed for embeding
     $videourl = videoembed_vimeo_parse_url($url);
@@ -344,14 +359,9 @@
       return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'vimeo') . '</b></p>';  
     }
     
-    // set video width and height
-    $videowidth = get_plugin_setting('videowidth','embedvideo');
-    // make sure width is a number and greater than zero
-    if (!isset($videowidth) || !is_numeric($videowidth) || $videowidth < 0)
-      $videowidth = 284;
-    // 27 is the height of the control bar which doesn't scale
-    $videoheight = round(300 * $videowidth / 400);
-                
+    // aspect ratio changes based on video - need to investigate
+    videoembed_calc_size($videowidth, $videoheight, 400/300, 0);
+                    
     // add css inline for now
     $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
   
@@ -408,7 +418,6 @@
    */
   function videoembed_vimeo_parse_embed($url)
   {
-
     if (!preg_match('/(value="http:\/\/vimeo.com\/moogaloop.swf\?clip_id=)([0-9-]*)(&)(.*" \/)/', $url, $matches))
     {
       //echo "malformed embed vimeo url";
@@ -426,9 +435,10 @@
    *
    * @param string $url 
    * @param integer $guid unique identifier of the widget
+   * @param integer $videowidth  optional override of admin set width
    * @return string css style, video div, and flash <object>
    */
-  function videoembed_metacafe_handler($url, $guid)
+  function videoembed_metacafe_handler($url, $guid, $videowidth)
   {
     // this extracts the core part of the url needed for embeding
     $videourl = videoembed_metacafe_parse_url($url);
@@ -437,14 +447,8 @@
       return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'metacafe') . '</b></p>';  
     }
     
-    // set video width and height
-    $videowidth = get_plugin_setting('videowidth','embedvideo');
-    // make sure width is a number and greater than zero
-    if (!isset($videowidth) || !is_numeric($videowidth) || $videowidth < 0)
-      $videowidth = 284;
-    // 27 is the height of the control bar which doesn't scale
-    $videoheight = round(295 * $videowidth / 400) + 40;
-                
+    videoembed_calc_size($videowidth, $videoheight, 400/295, 40);
+                    
     // add css inline for now
     $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
   
@@ -488,10 +492,9 @@
    */
   function videoembed_metacafe_parse_embed($url)
   {
-    //<embed src="http://www.metacafe.com/fplayer/2235731/rat_loves_cat.swf" width="400" height="345" wmode="transparent" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash"> </embed><br><font size = 1><a href="http://www.metacafe.com/watch/2235731/rat_loves_cat/">Rat Loves 
     if (!preg_match('/(src="http:\/\/)(www.)?(metacafe.com\/fplayer\/)([0-9]*)(\/[0-9a-zA-Z_-]*)(.swf)/', $url, $matches))
     {
-      //echo "malformed embed vimeo url";
+      //echo "malformed embed metacafe url";
       return;    
     }
 
@@ -500,5 +503,5 @@
             
     return $hash;  
   }
-          
+         
 ?>
