@@ -3,6 +3,6 @@
         <field key="author" value="Cash Costello" />
         <field key="version" value="0.6" />
         <field key="description" value="Embed Video Plugin" />
-        <field key="website" value="http://code.google.com/p/elgg-video/" />
+        <field key="website" value="" />
         <field key="copyright" value="(C) Cash Costello 2009" />
 </plugin_manifest>
