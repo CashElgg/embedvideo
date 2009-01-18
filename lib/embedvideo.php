@@ -62,7 +62,7 @@
     }    
     else if (strpos($url, 'dailymotion.com') != false)
     {
-      return '<p><b>not handling dailymotion.com videos yet</b></p>';
+      return videoembed_dm_handler($url, $guid, $videowidth);
     }        
     else if (strpos($url, 'blip.tv') != false)
     {
@@ -554,7 +554,7 @@
     
     if (!preg_match('/(http:\/\/www\.veoh\.com\/videos\/)([0-9a-zA-Z]*)/', $url, $matches))
     {
-      //echo "malformed veoh group url";
+      //echo "malformed veoh url";
       return;    
     }
           
@@ -584,5 +584,80 @@
             
     return $hash;  
   } 
+
+  /**
+   * main dm interface
+   *
+   * @param string $url 
+   * @param integer $guid unique identifier of the widget
+   * @param integer $videowidth  optional override of admin set width
+   * @return string css style, video div, and flash <object>
+   */
+  function videoembed_dm_handler($url, $guid, $videowidth)
+  {
+    // this extracts the core part of the url needed for embeding
+    $videourl = videoembed_dm_parse_url($url);
+    if (!isset($videourl))
+    {
+      return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'daily motion') . '</b></p>';  
+    }
+    
+    videoembed_calc_size($videowidth, $videoheight, 410/311, 30);
+                    
+    // add css inline for now
+    $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
+  
+    $embed_object .= videoembed_add_object('dm', $videourl, $guid, $videowidth, $videoheight);
+    
+    return $embed_object;   
+  }
+
+  /**
+   * parse dm url
+   *
+   * @param string $url 
+   * @return string hash
+   */
+  function videoembed_dm_parse_url($url)
+  {        
+    // separate parsing embed url
+    if (strpos($url, 'embed') != false)
+    {
+      return videoembed_dm_parse_embed($url);
+    }
+    
+    if (!preg_match('/(http:\/\/www\.veoh\.com\/videos\/)([0-9a-zA-Z]*)/', $url, $matches))
+    {
+      //echo "malformed daily motion url";
+      return;    
+    }
+          
+    $hash = $matches[2];
+        
+    //echo $hash; 
+       
+    return $hash;
+  }
+
+  /**
+   * parse dm embed code
+   *
+   * @param string $url 
+   * @return string hash
+   */
+  function videoembed_dm_parse_embed($url)
+  {
+    if (!preg_match('/(src="http:\/\/)(www.)?(veoh\.com\/veohplayer.swf\?permalinkId=)([a-zA-Z0-9]*)/', $url, $matches))
+    {
+      //echo "malformed embed daily motion url";
+      return;    
+    }
+
+    $hash   = $matches[4];
+    //echo $hash;
+            
+    return $hash;  
+  } 
+
            
 ?>
