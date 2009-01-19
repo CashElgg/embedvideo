@@ -8,7 +8,8 @@
   function embedvideo_init() {
   
     add_widget_type('embedvideo', elgg_echo('embedvideo:widget'), elgg_echo('embedvideo:description'), 'profile', true);
-      
+    
+    extend_view('css','embedvideo/css');  
   }
   
   // head off the default log listener and only log
