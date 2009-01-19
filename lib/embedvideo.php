@@ -11,12 +11,14 @@
    * vimeo
    * metacafe
    * veoh
+   * dailymotion
    *
    * todo
    * ------------
    * clean up display related code and move to css for easier skinning
    * look into creating embed code that validates as xhtml
-   * 
+   * add video listings and comment page for each video
+   *
    */
 
 
@@ -130,6 +132,9 @@
         break;
       case 'veoh':
         $videodiv .= "<embed src=\"http://www.veoh.com/veohplayer.swf?permalinkId={$url}&player=videodetailsembedded&videoAutoPlay=0\" allowFullScreen=\"true\" width=\"$width\" height=\"$height\" bgcolor=\"#FFFFFF\" type=\"application/x-shockwave-flash\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\"></embed>";
+        break;
+      case 'dm':
+        $videodiv .= "<object width=\"$width\" height=\"$height\"><param name=\"movie\" value=\"http://www.dailymotion.com/swf/{$url}\"></param><param name=\"allowFullScreen\" value=\"true\"></param><param name=\"allowScriptAccess\" value=\"always\"></param><embed src=\"http://www.dailymotion.com/swf/{$url}\" type=\"application/x-shockwave-flash\" width=\"$width\" height=\"$height\" allowFullScreen=\"true\" allowScriptAccess=\"always\"></embed></object>";
         break;       
     }
               
@@ -602,7 +607,7 @@
       return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'daily motion') . '</b></p>';  
     }
     
-    videoembed_calc_size($videowidth, $videoheight, 410/311, 30);
+    videoembed_calc_size($videowidth, $videoheight, 420/300, 35);
                     
     // add css inline for now
     $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
@@ -626,7 +631,7 @@
       return videoembed_dm_parse_embed($url);
     }
     
-    if (!preg_match('/(http:\/\/www\.veoh\.com\/videos\/)([0-9a-zA-Z]*)/', $url, $matches))
+    if (!preg_match('/(http:\/\/www\.dailymotion\.com\/.*\/)([0-9a-z]*)/', $url, $matches))
     {
       //echo "malformed daily motion url";
       return;    
@@ -647,7 +652,7 @@
    */
   function videoembed_dm_parse_embed($url)
   {
-    if (!preg_match('/(src="http:\/\/)(www.)?(veoh\.com\/veohplayer.swf\?permalinkId=)([a-zA-Z0-9]*)/', $url, $matches))
+    if (!preg_match('/(value="http:\/\/)(www.)?(dailymotion\.com\/swf\/)([a-zA-Z0-9]*)/', $url, $matches))
     {
       //echo "malformed embed daily motion url";
       return;    
