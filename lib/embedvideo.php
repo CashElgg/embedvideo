@@ -91,10 +91,6 @@
         #embedvideo{$guid} { 
           height: {$height}px;
           width: {$width}px; 
-          padding:0; 
-          margin:0 0 10px 0; 
-          overflow: hidden;
-          align: center;
         }
       </style>";
 
@@ -113,7 +109,7 @@
    */
   function videoembed_add_object($type, $url, $guid, $width, $height)
   {
-    $videodiv = "<div id=\"embedvideo{$guid}\">";
+    $videodiv = "<div id=\"embedvideo{$guid}\" class=\"embedvideo_video\">";
     
     // could move these into an array and use sprintf
     switch ($type) 
@@ -182,7 +178,6 @@
     
     videoembed_calc_size($videowidth, $videoheight, 425/320, 25);
                     
-    // add css inline for now
     $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
   
     $embed_object .= videoembed_add_object('youtube', $videourl, $guid, $videowidth, $videoheight);
@@ -285,7 +280,6 @@
     
     videoembed_calc_size($videowidth, $videoheight, 400/300, 27);
                 
-    // add css inline for now
     $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
   
     $embed_object .= videoembed_add_object('google', $videourl, $guid, $videowidth, $videoheight);
@@ -374,7 +368,6 @@
     // aspect ratio changes based on video - need to investigate
     videoembed_calc_size($videowidth, $videoheight, 400/300, 0);
                     
-    // add css inline for now
     $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
   
     $embed_object .= videoembed_add_object('vimeo', $videourl, $guid, $videowidth, $videoheight);
@@ -461,7 +454,6 @@
     
     videoembed_calc_size($videowidth, $videoheight, 400/295, 40);
                     
-    // add css inline for now
     $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
   
     $embed_object .= videoembed_add_object('metacafe', $videourl, $guid, $videowidth, $videoheight);
@@ -535,7 +527,6 @@
     
     videoembed_calc_size($videowidth, $videoheight, 410/311, 30);
                     
-    // add css inline for now
     $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
   
     $embed_object .= videoembed_add_object('veoh', $videourl, $guid, $videowidth, $videoheight);
@@ -609,7 +600,6 @@
     
     videoembed_calc_size($videowidth, $videoheight, 420/300, 35);
                     
-    // add css inline for now
     $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
   
     $embed_object .= videoembed_add_object('dm', $videourl, $guid, $videowidth, $videoheight);

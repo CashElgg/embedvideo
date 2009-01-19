@@ -16,7 +16,7 @@
       $video_title = kses($video_title, $CONFIG->allowedtags, $CONFIG->allowedprotocols);
     }   
     
-    echo "<div style='text-align: center; margin:0 0 5px 0;'><b>" . $video_title . "</b></div>";	 
+    echo '<div class="videoembed_title"><b>' . $video_title . '</b></div>';	 
 
     echo videoembed_create_embed_object($video_url, $vars['entity']->getGUID());
     
@@ -26,5 +26,5 @@
       $video_comment = kses($video_comment, $CONFIG->allowedtags, $CONFIG->allowedprotocols);
     }   
     
-    echo $video_comment;	 
+    echo '<div class="videoembed_comment">' . $video_comment . '</div>';	 
 ?>
