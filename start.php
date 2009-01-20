@@ -6,10 +6,20 @@
    */
   
   function embedvideo_init() {
-  
+    global $CONFIG;
+      
+    @include_once $CONFIG->pluginspath . 'embedvideo/lib/embedvideo.php';
+
     add_widget_type('embedvideo', elgg_echo('embedvideo:widget'), elgg_echo('embedvideo:description'), 'profile', true);
     
     extend_view('css','embedvideo/css');  
+  }
+  
+  function embedvideo_frontpage() {
+    $url   = get_plugin_setting('front_url', 'embedvideo');
+    $width = get_plugin_setting('front_width', 'embedvideo');
+    
+    return videoembed_create_embed_object($url, 0, $width);
   }
   
   // head off the default log listener and only log
