@@ -4,6 +4,12 @@
    * Embed Video Library
    * Functions to parse flash video urls and create the flash embed object
    * 
+	 * @package Embed Video Library
+	 * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser Public License version 3
+	 * @author Cash Costello
+	 * @copyright Cash Costello 2009
+   *
+   *
    * Current video sites supported:
    *
    * youtube
@@ -15,7 +21,6 @@
    *
    * todo
    * ------------
-   * clean up display related code and move to css for easier skinning
    * look into creating embed code that validates as xhtml
    * add video listings and comment page for each video
    *
