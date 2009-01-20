@@ -28,7 +28,7 @@
   // head off the default log listener and only log
   function embedvideo_log_listener($event, $object_type, $object) {
     
-    if ($object instanceof Loggable && $object->getClassName() == 'ElggWidget')
+    if ($event === 'update' && $object instanceof Loggable && $object->getClassName() === 'ElggWidget')
     {
       if ($object->handler == 'embedvideo')
       {
