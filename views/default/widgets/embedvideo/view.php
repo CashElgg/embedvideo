@@ -1,6 +1,6 @@
 <?php
         
-    if (!@include(dirname(dirname(dirname(dirname(dirname(__FILE__))))) . "/lib/embedvideo.php"))
+    if (!function_exists('videoembed_create_embed_object'))
     {
       echo 'error loading embedvideo library'; 
       return;
