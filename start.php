@@ -19,6 +19,9 @@
     $url   = get_plugin_setting('front_url', 'embedvideo');
     $width = get_plugin_setting('front_width', 'embedvideo');
     
+    if (!isset($width) || !is_numeric($width) || $width < 0)
+      $width = 400; // if bad, set default to 400
+    
     return videoembed_create_embed_object($url, 0, $width);
   }
   
