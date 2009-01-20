@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin_manifest>
         <field key="author" value="Cash Costello" />
-        <field key="version" value="0.6" />
+        <field key="version" value="0.7" />
         <field key="description" value="Embed Video Plugin" />
         <field key="website" value="" />
         <field key="copyright" value="(C) Cash Costello 2009" />
