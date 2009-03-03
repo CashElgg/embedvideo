@@ -22,7 +22,7 @@
    * todo
    * ------------
    * look into creating embed code that validates as xhtml
-   * add video listings and comment page for each video
+   * 
    *
    */
 
@@ -114,19 +114,19 @@
    */
   function videoembed_add_object($type, $url, $guid, $width, $height)
   {
-    $videodiv = "<div id=\"embedvideo{$guid}\" class=\"embedvideo_video\">";
+    $videodiv = "<div id=\"embedvideo{$guid}\" class=\"videoembed_video\">";
     
     // could move these into an array and use sprintf
     switch ($type) 
     {
       case 'youtube':
-        $videodiv .= "<object width=\"$width\" height=\"$height\"><param name=\"movie\" value=\"http://{$url}&hl=en&fs=1\"></param><param name=\"allowFullScreen\" value=\"true\"></param><embed src=\"http://{$url}&hl=en&fs=1\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" width=\"$width\" height=\"$height\"></embed></object>";
+        $videodiv .= "<object width=\"$width\" height=\"$height\"><param name=\"movie\" value=\"http://{$url}&hl=en&fs=1&showinfo=0\"></param><param name=\"allowFullScreen\" value=\"true\"></param><embed src=\"http://{$url}&hl=en&fs=1&showinfo=0\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" width=\"$width\" height=\"$height\"></embed></object>";
         break;
       case 'google':
         $videodiv .= "<embed id=\"VideoPlayback\" src=\"http://video.google.com/googleplayer.swf?docid={$url}&hl=en&fs=true\" style=\"width:{$width}px;height:{$height}px\" allowFullScreen=\"true\" allowScriptAccess=\"always\" type=\"application/x-shockwave-flash\"> </embed>";
         break;
       case 'vimeo':
-        $videodiv .= "<object width=\"$width\" height=\"$height\"><param name=\"allowfullscreen\" value=\"true\" /><param name=\"allowscriptaccess\" value=\"always\" /><param name=\"movie\" value=\"http://vimeo.com/moogaloop.swf?clip_id={$url}&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1\" /><embed src=\"http://vimeo.com/moogaloop.swf?clip_id={$url}&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" allowscriptaccess=\"always\" width=\"$width\" height=\"$height\"></embed></object>";
+        $videodiv .= "<object width=\"$width\" height=\"$height\"><param name=\"allowfullscreen\" value=\"true\" /><param name=\"allowscriptaccess\" value=\"always\" /><param name=\"movie\" value=\"http://vimeo.com/moogaloop.swf?clip_id={$url}&amp;server=vimeo.com&amp;show_title=0&amp;show_byline=0&amp;show_portrait=0&amp;color=&amp;fullscreen=1\" /><embed src=\"http://vimeo.com/moogaloop.swf?clip_id={$url}&amp;server=vimeo.com&amp;show_title=0&amp;show_byline=0&amp;show_portrait=0&amp;color=&amp;fullscreen=1\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" allowscriptaccess=\"always\" width=\"$width\" height=\"$height\"></embed></object>";
         break;
       case 'metacafe':
         $videodiv .= "<embed src=\"http://www.metacafe.com/fplayer/{$url}.swf\" width=\"$width\" height=\"$height\" wmode=\"transparent\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\" type=\"application/x-shockwave-flash\"></embed>";
@@ -181,7 +181,7 @@
       return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'youtube') . '</b></p>';  
     }
     
-    videoembed_calc_size($videowidth, $videoheight, 425/320, 25);
+    videoembed_calc_size($videowidth, $videoheight, 425/320, 24);
                     
     $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
   
@@ -389,14 +389,14 @@
   function videoembed_vimeo_parse_url($url)
   {        
     // separate parsing embed url
-    if (strpos($url, 'embed') != false)
+    if (strpos($url, 'object') != false)
     {
       return videoembed_vimeo_parse_embed($url);
     }
         
     if (strpos($url, 'groups') != false)
     {
-      if (!preg_match('/(http:\/\/)(www\.)?(vimeo\.com\/groups)(.*)(\/videos\/)(.*)/', $url, $matches))
+      if (!preg_match('/(http:\/\/)(www\.)?(vimeo\.com\/groups)(.*)(\/videos\/)([0-9]*)/', $url, $matches))
       {
         //echo "malformed vimeo group url";
         return;    
@@ -406,7 +406,7 @@
     }
     else
     {
-      if (!preg_match('/(http:\/\/)(www.)?(vimeo.com\/)(.*)/', $url, $matches))
+      if (!preg_match('/(http:\/\/)(www.)?(vimeo.com\/)([0-9]*)/', $url, $matches))
       {
         //echo "malformed vimeo url";
         return;    
@@ -553,7 +553,7 @@
       return videoembed_veoh_parse_embed($url);
     }
     
-    if (!preg_match('/(http:\/\/www\.veoh\.com\/videos\/)([0-9a-zA-Z]*)/', $url, $matches))
+    if (!preg_match('/(http:\/\/www\.veoh\.com\/.*\/watch\/)([0-9a-zA-Z]*)/', $url, $matches))
     {
       //echo "malformed veoh url";
       return;    
