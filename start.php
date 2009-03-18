@@ -27,14 +27,21 @@
   
   // head off the default log listener and only log
   function embedvideo_log_listener($event, $object_type, $object) {
+  
+    static $catch_double;
     
     if ($event === 'update' && $object instanceof Loggable && $object->getClassName() === 'ElggWidget')
     {
       if ($object->handler == 'embedvideo')
       {
         // only log when url has been changed
-        if (!isset($object->url) || $object->url_hash == md5($object->url))
-          return false;
+        if (isset($object->url) && $object->url_hash != md5($object->url))
+        {
+          if (!isset($catch_double))
+            add_to_river('river/object/widget/embedvideo/update', 'embedvideo', $_SESSION['user']->guid, $_SESSION['user']->guid);          
+          
+          $catch_double = true;
+        }
       } 
     }
     
@@ -43,6 +50,5 @@
     
   register_elgg_event_handler('init','system','embedvideo_init');
   
-  // filter widget updates before system log
-  register_elgg_event_handler('all','all','embedvideo_log_listener', 390);
+  register_elgg_event_handler('all','all','embedvideo_log_listener');
 ?>
