@@ -5,25 +5,30 @@
    * 
    */
   
+  
   function embedvideo_init() {
     global $CONFIG;
       
-    @include_once $CONFIG->pluginspath . 'embedvideo/lib/embedvideo.php';
+    include $CONFIG->pluginspath . 'embedvideo/lib/embedvideo.php';
 
     add_widget_type('embedvideo', elgg_echo('embedvideo:widget'), elgg_echo('embedvideo:description'), 'profile', true);
     
     extend_view('css','embedvideo/css');  
   }
   
+  
+  
   function embedvideo_frontpage() {
     $url   = get_plugin_setting('front_url', 'embedvideo');
     $width = get_plugin_setting('front_width', 'embedvideo');
     
     if (!isset($width) || !is_numeric($width) || $width < 0)
-      $width = 400; // if bad, set default to 400
+      $width = 400; // if bad width, set default to 400 (seems a reasonable width)
     
     return videoembed_create_embed_object($url, 0, $width);
   }
+  
+  
   
   // head off the default log listener and only log
   function embedvideo_log_listener($event, $object_type, $object) {
@@ -47,6 +52,7 @@
     
     return true;
   }
+  
     
   register_elgg_event_handler('init','system','embedvideo_init');
   
