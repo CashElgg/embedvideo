@@ -23,7 +23,7 @@
   </p>  
 
   <p>
-    <?php echo elgg_echo('embedvideo:comment'); ?> (html tags are allowed)<br />
+    <?php echo elgg_echo('embedvideo:comment'); echo elgg_echo('embedvideo:tags_instruct'); ?> <br />
     <textarea class="input-textarea" name="params[comment]" style="height: 100px;" ><?php echo htmlentities($vars['entity']->comment); ?></textarea>
   </p>  
 

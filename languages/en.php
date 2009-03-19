@@ -9,6 +9,7 @@
     'embedvideo:description' => 'Add video from sites like youtube to your profile',
     'embedvideo:width' => 'Video Width',
     'embedvideo:sites' => 'youtube, google, vimeo, metacafe, veoh, daily motion',
+    'embedvideo:tags_instruct' => ' (html tags are allowed)',
         
     'embedvideo:novideo' => 'No video set',
     'embedvideo:unrecognized' => 'Unrecognized video site',
