@@ -18,11 +18,13 @@
    * metacafe
    * veoh
    * dailymotion
+   * blip.tv
+   * teacher tube
    *
    * todo
    * ------------
    * look into creating embed code that validates as xhtml
-   * 
+   * improve regex
    *
    */
 
@@ -73,7 +75,11 @@
     }        
     else if (strpos($url, 'blip.tv') != false)
     {
-      return '<p><b>not handling blip.tv videos yet</b></p>';
+      return videoembed_blip_handler($url, $guid, $videowidth);
+    }
+    else if (strpos($url, 'teachertube.com') != false)
+    {
+      return videoembed_teachertube_handler($url, $guid, $videowidth);
     }
     else
     {
@@ -136,6 +142,11 @@
         break;
       case 'dm':
         $videodiv .= "<object width=\"$width\" height=\"$height\"><param name=\"movie\" value=\"http://www.dailymotion.com/swf/{$url}\"></param><param name=\"allowFullScreen\" value=\"true\"></param><param name=\"allowScriptAccess\" value=\"always\"></param><embed src=\"http://www.dailymotion.com/swf/{$url}\" type=\"application/x-shockwave-flash\" width=\"$width\" height=\"$height\" allowFullScreen=\"true\" allowScriptAccess=\"always\"></embed></object>";
+        break;
+      case 'blip':
+        break;
+      case 'teacher':
+        $videodiv .= "<embed src=\"http://www.teachertube.com/skin-p/mediaplayer.swf\" width=\"$width\" height=\"$height\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" menu=\"false\" flashvars=\"height={$height}&width={$width}&file=http://streaming.teachertube.com/flvideo/{$url}.flv&image=http://www.teachertube.com/thumbnails/{$url}.jpg&location=http://www.teachertube.com/skin-p/mediaplayer.swf&logo=http://www.teachertube.com/images/greylogo.swf&autostart=false&volume=80&overstretch=fit\"></embed>";
         break;       
     }
               
@@ -406,7 +417,7 @@
     }
     else
     {
-      if (!preg_match('/(http:\/\/)(www.)?(vimeo.com\/)([0-9]*)/', $url, $matches))
+      if (!preg_match('/(http:\/\/)(www\.)?(vimeo.com\/)([0-9]*)/', $url, $matches))
       {
         //echo "malformed vimeo url";
         return;    
@@ -574,7 +585,7 @@
    */
   function videoembed_veoh_parse_embed($url)
   {
-    if (!preg_match('/(src="http:\/\/)(www.)?(veoh\.com\/veohplayer.swf\?permalinkId=)([a-zA-Z0-9]*)/', $url, $matches))
+    if (!preg_match('/(src="http:\/\/)(www\.)?(veoh\.com\/veohplayer.swf\?permalinkId=)([a-zA-Z0-9]*)/', $url, $matches))
     {
       //echo "malformed embed veoh url";
       return;    
@@ -647,7 +658,7 @@
    */
   function videoembed_dm_parse_embed($url)
   {
-    if (!preg_match('/(value="http:\/\/)(www.)?(dailymotion\.com\/swf\/)([a-zA-Z0-9]*)/', $url, $matches))
+    if (!preg_match('/(value="http:\/\/)(www\.)?(dailymotion\.com\/swf\/)([a-zA-Z0-9]*)/', $url, $matches))
     {
       //echo "malformed embed daily motion url";
       return;    
@@ -659,5 +670,133 @@
     return $hash;  
   } 
 
+  /**
+   * main blip interface
+   *
+   * @param string $url 
+   * @param integer $guid unique identifier of the widget
+   * @param integer $videowidth  optional override of admin set width
+   * @return string css style, video div, and flash <object>
+   */
+  function videoembed_blip_handler($url, $guid, $videowidth)
+  {
+    // this extracts the core part of the url needed for embeding
+    $videourl = videoembed_blip_parse_url($url);
+    if (!isset($videourl))
+    {
+      return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'blip.tv') . '</b></p>';  
+    }
+    
+    videoembed_calc_size($videowidth, $videoheight, 420/300, 35);
+                    
+    $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
+  
+    $embed_object .= videoembed_add_object('blip', $videourl, $guid, $videowidth, $videoheight);
+    
+    return $embed_object;   
+  }
+
+  /**
+   * parse blip url
+   *
+   * @param string $url 
+   * @return string hash
+   */
+  function videoembed_blip_parse_url($url)
+  {        
+    // separate parsing embed url
+    if (strpos($url, 'embed') != false)
+    {
+      return videoembed_blip_parse_embed($url);
+    }
+    
+    if (!preg_match('/(http:\/\/(www\.)?(dailymotion\.com\/.*\/)([0-9a-z]*)/', $url, $matches))
+    {
+      //echo "malformed blip.tv url";
+      return;    
+    }
+          
+    $hash = $matches[2];
+        
+    //echo $hash; 
+       
+    return $hash;
+  }
+
+  /**
+   * parse blip embed code
+   *
+   * @param string $url 
+   * @return string hash
+   */
+  function videoembed_blip_parse_embed($url)
+  {
+    if (!preg_match('/(value="http:\/\/)(www\.)?(blip\.tv\/swf\/)([a-zA-Z0-9]*)/', $url, $matches))
+    {
+      //echo "malformed embed blip.tv url";
+      return;    
+    }
+
+    $hash   = $matches[4];
+    //echo $hash;
+            
+    return $hash;  
+  } 
+
+  /**
+   * main teacher tube interface
+   *
+   * @param string $url 
+   * @param integer $guid unique identifier of the widget
+   * @param integer $videowidth  optional override of admin set width
+   * @return string css style, video div, and flash <object>
+   */
+  function videoembed_teachertube_handler($url, $guid, $videowidth)
+  {
+    // this extracts the core part of the url needed for embeding
+    $videourl = videoembed_teachertube_parse_url($url);
+    if (!is_numeric($videourl))
+    {
+      if ($videourl === 'err1')
+        return '<p><b>Only Teachertube embeddables supported</b></p>';        
+      else
+        return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'teacher tube') . '</b></p>';
+    }
+    
+    videoembed_calc_size($videowidth, $videoheight, 425/330, 20);
+                    
+    $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
+  
+    $embed_object .= videoembed_add_object('teacher', $videourl, $guid, $videowidth, $videoheight);
+    
+    return $embed_object;   
+  }
+
+  /**
+   * parse teachertube url
+   *
+   * @param string $url 
+   * @return string hash
+   */
+  function videoembed_teachertube_parse_url($url)
+  {        
+    // separate parsing embed url
+    if (strpos($url, 'embed') === false)
+    {
+      return 'err1';
+    }
+    
+    if (!preg_match('/(file=http:\/\/streaming\.teachertube\.com\/flvideo\/)([0-9]*)/', $url, $matches))
+    {
+      //echo "malformed teacher tube url";
+      return 'err2';    
+    }
+          
+    $hash = $matches[2];
+        
+    //echo $hash; 
+       
+    return $hash;
+  }
            
 ?>
