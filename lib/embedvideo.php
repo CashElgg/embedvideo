@@ -144,6 +144,7 @@
         $videodiv .= "<object width=\"$width\" height=\"$height\"><param name=\"movie\" value=\"http://www.dailymotion.com/swf/{$url}\"></param><param name=\"allowFullScreen\" value=\"true\"></param><param name=\"allowScriptAccess\" value=\"always\"></param><embed src=\"http://www.dailymotion.com/swf/{$url}\" type=\"application/x-shockwave-flash\" width=\"$width\" height=\"$height\" allowFullScreen=\"true\" allowScriptAccess=\"always\"></embed></object>";
         break;
       case 'blip':
+        $videodiv .= "<embed src=\"http://blip.tv/play/{$url}\" type=\"application/x-shockwave-flash\" width=\"$width\" height=\"$height\" allowscriptaccess=\"always\" allowfullscreen=\"true\"></embed>";
         break;
       case 'teacher':
         $videodiv .= "<embed src=\"http://www.teachertube.com/skin-p/mediaplayer.swf\" width=\"$width\" height=\"$height\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" menu=\"false\" flashvars=\"height={$height}&width={$width}&file=http://streaming.teachertube.com/flvideo/{$url}.flv&image=http://www.teachertube.com/thumbnails/{$url}.jpg&location=http://www.teachertube.com/skin-p/mediaplayer.swf&logo=http://www.teachertube.com/images/greylogo.swf&autostart=false&volume=80&overstretch=fit\"></embed>";
@@ -682,16 +683,22 @@
   {
     // this extracts the core part of the url needed for embeding
     $videourl = videoembed_blip_parse_url($url);
-    if (!isset($videourl))
+    if (!is_array($videourl))
     {
-      return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'blip.tv') . '</b></p>';  
+      if ($videourl == 1)
+        return '<p><b>Only embed supported for blip.tv</b></p>';        
+      else
+        return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'blip.tv') . '</b></p>';
     }
     
-    videoembed_calc_size($videowidth, $videoheight, 420/300, 35);
+    $width = $videourl[1];
+    $height = $videourl[2] - 30;
+    
+    videoembed_calc_size($videowidth, $videoheight, $width/$height, 30);
                     
     $embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
   
-    $embed_object .= videoembed_add_object('blip', $videourl, $guid, $videowidth, $videoheight);
+    $embed_object .= videoembed_add_object('blip', $videourl[0], $guid, $videowidth, $videoheight);
     
     return $embed_object;   
   }
@@ -705,43 +712,26 @@
   function videoembed_blip_parse_url($url)
   {        
     // separate parsing embed url
-    if (strpos($url, 'embed') != false)
+    if (strpos($url, 'embed') === false)
     {
-      return videoembed_blip_parse_embed($url);
+      return 1;
     }
     
-    if (!preg_match('/(http:\/\/(www\.)?(dailymotion\.com\/.*\/)([0-9a-z]*)/', $url, $matches))
+    // <embed src="http://blip.tv/play/gu0d89VzlMA3%2Em4v" type="application/x-shockwave-flash" width="504" height="408" allowscriptaccess="always" allowfullscreen="true"></embed> 
+    if (!preg_match('/(src="http:\/\/blip\.tv\/play\/)([a-zA-Z0-9%]*)(.*width=")([0-9]*)(.*height=")([0-9]*)/', $url, $matches))
     {
       //echo "malformed blip.tv url";
-      return;    
+      return 2;    
     }
           
-    $hash = $matches[2];
+    $hash[0] = $matches[2];
+    $hash[1] = $matches[4];
+    $hash[2] = $matches[6];
         
-    //echo $hash; 
-       
+    //echo $hash[0];
+           
     return $hash;
   }
-
-  /**
-   * parse blip embed code
-   *
-   * @param string $url 
-   * @return string hash
-   */
-  function videoembed_blip_parse_embed($url)
-  {
-    if (!preg_match('/(value="http:\/\/)(www\.)?(blip\.tv\/swf\/)([a-zA-Z0-9]*)/', $url, $matches))
-    {
-      //echo "malformed embed blip.tv url";
-      return;    
-    }
-
-    $hash   = $matches[4];
-    //echo $hash;
-            
-    return $hash;  
-  } 
 
   /**
    * main teacher tube interface

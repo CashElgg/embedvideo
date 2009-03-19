@@ -8,7 +8,7 @@
     'embedvideo:comment' => 'Comment',
     'embedvideo:description' => 'Add video from sites like youtube to your profile',
     'embedvideo:width' => 'Video Width',
-    'embedvideo:sites' => 'youtube, google, vimeo, metacafe, veoh, daily motion',
+    'embedvideo:sites' => 'youtube, google, vimeo, metacafe, veoh, daily motion, blip.tv',
     'embedvideo:tags_instruct' => ' (html tags are allowed)',
         
     'embedvideo:novideo' => 'No video set',
