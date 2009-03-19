@@ -38,7 +38,7 @@
         if (isset($object->url) && $object->url_hash != md5($object->url))
         {
           if (!isset($catch_double))
-            add_to_river('river/object/widget/embedvideo/update', 'embedvideo', $_SESSION['user']->guid, $_SESSION['user']->guid);          
+            add_to_river('river/object/widget/embedvideo/update', 'embedvideo', $_SESSION['user']->guid, $object->guid);          
           
           $catch_double = true;
         }

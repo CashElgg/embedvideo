@@ -14,7 +14,7 @@
     'embedvideo:unrecognized' => 'Unrecognized video site',
     'embedvideo:parseerror' => 'Unable to parse %s url',
     
-    'embedvideo:river:updated' => "%s posted a new video.",
+    'embedvideo:river:updated' => "%s posted a new video to their profile",
     
   );
           
