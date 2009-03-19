@@ -18,3 +18,7 @@ EMBED VIDEO
   align: center;
 }
 
+.river_object_widget_embedvideo
+{
+	background: transparent url(<?php echo $CONFIG->wwwroot; ?>mod/embedvideo/graphics/river_icon_embedvideo.gif) no-repeat scroll left -1px;
+}
