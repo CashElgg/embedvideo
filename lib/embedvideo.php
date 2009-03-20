@@ -25,6 +25,9 @@
    * ------------
    * look into creating embed code that validates as xhtml
    * improve regex
+   * add notifications maybe
+   * more video sites
+   * blog embedding?
    *
    */
 
@@ -565,7 +568,7 @@
       return videoembed_veoh_parse_embed($url);
     }
     
-    if (!preg_match('/(http:\/\/www\.veoh\.com\/.*\/watch\/)([0-9a-zA-Z]*)/', $url, $matches))
+    if (!preg_match('/(http:\/\/www\.veoh\.com\/.*\/#watch%3D)([0-9a-zA-Z]*)/', $url, $matches))
     {
       //echo "malformed veoh url";
       return;    
