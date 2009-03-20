@@ -56,5 +56,6 @@
     
   register_elgg_event_handler('init','system','embedvideo_init');
   
-  register_elgg_event_handler('all','all','embedvideo_log_listener');
+  if (function_exists('add_to_river'))
+    register_elgg_event_handler('all','all','embedvideo_log_listener');
 ?>
