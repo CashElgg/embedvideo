@@ -516,7 +516,7 @@
    */
   function videoembed_metacafe_parse_embed($url)
   {
-    if (!preg_match('/(src="http:\/\/)(www\.)?(metacafe\.com\/fplayer\/)([0-9]*)(\/[0-9a-zA-Z_-]*)(.swf)/', $url, $matches))
+    if (!preg_match('/(src="http:\/\/)(www\.)?(metacafe\.com\/fplayer\/)([0-9]*)(\/[0-9a-zA-Z_-]*)(\.swf)/', $url, $matches))
     {
       //echo "malformed embed metacafe url";
       return;    
