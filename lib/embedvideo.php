@@ -597,12 +597,12 @@ function videoembed_dm_parse_url($url) {
  * @return string hash
  */
 function videoembed_dm_parse_embed($url) {
-	if (!preg_match('/(value="http:\/\/)(www\.)?(dailymotion\.com\/swf\/)([a-zA-Z0-9]*)/', $url, $matches)) {
+	if (!preg_match('/(value="http:\/\/)(www\.)?dailymotion\.com\/swf\/video\/([a-zA-Z0-9]*)/', $url, $matches)) {
 		//echo "malformed embed daily motion url";
 		return;
 	}
 
-	$hash   = $matches[4];
+	$hash   = $matches[3];
 	//echo $hash;
 
 	return $hash;
