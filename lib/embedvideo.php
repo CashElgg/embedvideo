@@ -256,7 +256,6 @@ function videoembed_youtube_parse_embed($url) {
 	return $domain . 'v/' . $hash;
 }
 
-
 /**
  * main google interface
  *
@@ -313,6 +312,7 @@ function videoembed_google_parse_url($url) {
 	return $hash;
 }
 
+// <embed id=VideoPlayback src=http://video.google.com/googleplayer.swf?docid=-6426224583918141996&hl=en&fs=true style=width:400px;height:326px allowFullScreen=true allowScriptAccess=always type=application/x-shockwave-flash> </embed>
 
 /**
  * parse google embed code
@@ -322,7 +322,7 @@ function videoembed_google_parse_url($url) {
  */
 function videoembed_google_parse_embed($url) {
 
-	if (!preg_match('/(src=")(http:\/\/video\.google\.com\/googleplayer\.swf\?docid=)([0-9-]*)(&hl=[a-zA-Z]{2})(.*")/', $url, $matches)) {
+	if (!preg_match('/(src=)(http:\/\/video\.google\.com\/googleplayer\.swf\?docid=)([0-9-]*)(&hl=[a-zA-Z]{2})(.*)/', $url, $matches)) {
 		//echo "malformed embed google url";
 		return;
 	}
