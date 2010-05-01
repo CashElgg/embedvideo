@@ -20,6 +20,7 @@
  * dailymotion
  * blip.tv
  * teacher tube
+ * hulu
  *
  * todo
  * ------------
@@ -48,32 +49,25 @@ function videoembed_create_embed_object($url, $guid, $videowidth=0) {
 
 	if (strpos($url, 'youtube.com') != false) {
 		return videoembed_youtube_handler($url, $guid, $videowidth);
-	}
-	else if (strpos($url, 'video.google.com') != false) {
+	} else if (strpos($url, 'video.google.com') != false) {
 		return videoembed_google_handler($url, $guid, $videowidth);
-	}
-	else if (strpos($url, 'vimeo.com') != false) {
+	} else if (strpos($url, 'vimeo.com') != false) {
 		return videoembed_vimeo_handler($url, $guid, $videowidth);
-	}
-	else if (strpos($url, 'metacafe.com') != false) {
+	} else if (strpos($url, 'metacafe.com') != false) {
 		return videoembed_metacafe_handler($url, $guid, $videowidth);
-	}
-	else if (strpos($url, 'veoh.com') != false) {
+	} else if (strpos($url, 'veoh.com') != false) {
 		return videoembed_veoh_handler($url, $guid, $videowidth);
-	}
-	else if (strpos($url, 'viddler.com') != false) {
+	} else if (strpos($url, 'viddler.com') != false) {
 		return '<p><b>not handling viddler.com videos yet</b></p>';
-	}
-	else if (strpos($url, 'dailymotion.com') != false) {
+	} else if (strpos($url, 'dailymotion.com') != false) {
 		return videoembed_dm_handler($url, $guid, $videowidth);
-	}
-	else if (strpos($url, 'blip.tv') != false) {
+	} else if (strpos($url, 'blip.tv') != false) {
 		return videoembed_blip_handler($url, $guid, $videowidth);
-	}
-	else if (strpos($url, 'teachertube.com') != false) {
+	} else if (strpos($url, 'teachertube.com') != false) {
 		return videoembed_teachertube_handler($url, $guid, $videowidth);
-	}
-	else {
+	} else if (strpos($url, 'hulu.com') != false) {
+		return videoembed_hulu_handler($url, $guid, $videowidth);
+	} else {
 		return '<p><b>' . elgg_echo('embedvideo:unrecognized') . '</b></p>';
 	}
 }
@@ -135,7 +129,10 @@ function videoembed_add_object($type, $url, $guid, $width, $height) {
 			$videodiv .= "<embed src=\"http://blip.tv/play/{$url}\" type=\"application/x-shockwave-flash\" width=\"$width\" height=\"$height\" allowscriptaccess=\"always\" allowfullscreen=\"true\"></embed>";
 			break;
 		case 'teacher':
-			$videodiv .= "<embed src=\"http://www.teachertube.com/skin-p/mediaplayer.swf\" width=\"$width\" height=\"$height\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" menu=\"false\" flashvars=\"height={$height}&width={$width}&file=http://streaming.teachertube.com/flvideo/{$url}.flv&image=http://www.teachertube.com/thumbnails/{$url}.jpg&location=http://www.teachertube.com/skin-p/mediaplayer.swf&logo=http://www.teachertube.com/images/greylogo.swf&autostart=false&volume=80&overstretch=fit\"></embed>";
+			$videodiv .= "<embed src=\"http://www.teachertube.com/embed/player.swf\" width=\"$width\" height=\"$height\" type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\" allowfullscreen=\"true\" flashvars=\"file=http://www.teachertube.com/embedFLV.php?pg=video_{$url}&menu=false&&frontcolor=ffffff&lightcolor=FF0000&logo=http://www.teachertube.com/www3/images/greylogo.swf&skin=http://www.teachertube.com/embed/overlay.swf&volume=80&controlbar=over&displayclick=link&viral.link=http://www.teachertube.com/viewVideo.php?video_id={$url}&stretching=exactfit&plugins=viral-2&viral.callout=none&viral.onpause=false\"></embed>";
+			break;
+		case 'hulu':
+			$videodiv .= "<object width=\"{$width}\" height=\"{$height}\"><param name=\"movie\" value=\"http://www.hulu.com/embed/{$url}\"></param><param name=\"allowFullScreen\" value=\"true\"></param><embed src=\"http://www.hulu.com/embed/{$url}\" type=\"application/x-shockwave-flash\" allowFullScreen=\"true\"  width=\"{$width}\" height=\"{$height}\"></embed></object>";
 			break;
 	}
 
@@ -620,10 +617,11 @@ function videoembed_blip_handler($url, $guid, $videowidth) {
 	// this extracts the core part of the url needed for embeding
 	$videourl = videoembed_blip_parse_url($url);
 	if (!is_array($videourl)) {
-		if ($videourl == 1)
+		if ($videourl == 1) {
 			return '<p><b>Only embed supported for blip.tv</b></p>';
-		else
+		} else {
 			return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'blip.tv') . '</b></p>';
+		}
 	}
 
 	$width = $videourl[1];
@@ -650,7 +648,6 @@ function videoembed_blip_parse_url($url) {
 		return 1;
 	}
 
-	// <embed src="http://blip.tv/play/gu0d89VzlMA3%2Em4v" type="application/x-shockwave-flash" width="504" height="408" allowscriptaccess="always" allowfullscreen="true"></embed>
 	if (!preg_match('/(src="http:\/\/blip\.tv\/play\/)([a-zA-Z0-9%]*)(.*width=")([0-9]*)(.*height=")([0-9]*)/', $url, $matches)) {
 		//echo "malformed blip.tv url";
 		return 2;
@@ -677,11 +674,7 @@ function videoembed_teachertube_handler($url, $guid, $videowidth) {
 	// this extracts the core part of the url needed for embeding
 	$videourl = videoembed_teachertube_parse_url($url);
 	if (!is_numeric($videourl)) {
-		if ($videourl === 'err1') {
-			return '<p><b>Only Teachertube embeddables supported</b></p>';
-		} else {
-			return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'teacher tube') . '</b></p>';
-		}
+		return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'teacher tube') . '</b></p>';
 	}
 
 	videoembed_calc_size($videowidth, $videoheight, 425/330, 20);
@@ -701,13 +694,83 @@ function videoembed_teachertube_handler($url, $guid, $videowidth) {
  */
 function videoembed_teachertube_parse_url($url) {
 	// separate parsing embed url
-	if (strpos($url, 'embed') === false) {
-		return 'err1';
+	if (strpos($url, 'embed') !== false) {
+		return videoembed_teachertube_parse_embed($url);;
 	}
 
-	if (!preg_match('/(file=http:\/\/streaming\.teachertube\.com\/flvideo\/)([0-9]*)/', $url, $matches)) {
+	if (!preg_match('/(http:\/\/www\.teachertube\.com\/viewVideo\.php\?video_id=)([0-9]*)&(.*)/', $url, $matches)) {
 		//echo "malformed teacher tube url";
-		return 'err2';
+		return;
+	}
+
+	$hash = $matches[2];
+
+	echo $hash;
+
+	return $hash;
+}
+
+/**
+ * parse teacher tube embed code
+ *
+ * @param string $url
+ * @return string hash
+ */
+function videoembed_teachertube_parse_embed($url) {
+	if (!preg_match('/(flashvars="file=http:\/\/www\.teachertube\.com\/embedFLV.php\?pg=video_)([0-9]*)&(.*)/', $url, $matches)) {
+		//echo "malformed teacher tube embed code";
+		return;
+	}
+
+	$hash   = $matches[2];
+	//echo $hash;
+
+	return $hash;
+}
+
+/**
+ * main hulu interface
+ *
+ * @param string $url
+ * @param integer $guid unique identifier of the widget
+ * @param integer $videowidth  optional override of admin set width
+ * @return string css style, video div, and flash <object>
+ */
+function videoembed_hulu_handler($url, $guid, $videowidth) {
+	// this extracts the core part of the url needed for embeding
+	$videourl = videoembed_hulu_parse_url($url);
+	if (is_numeric($videourl)) {
+		if ($videourl == 1) {
+			return '<p><b>Only embed supported for hulu.com</b></p>';
+		} else {
+			return '<p><b>' . sprintf(elgg_echo('embedvideo:parseerror'), 'hulu.com') . '</b></p>';
+		}
+	}
+
+	videoembed_calc_size($videowidth, $videoheight, 512/296, 0);
+
+	$embed_object = videoembed_add_css($guid, $videowidth, $videoheight);
+
+	$embed_object .= videoembed_add_object('hulu', $videourl, $guid, $videowidth, $videoheight);
+
+	return $embed_object;
+}
+
+/**
+ * parse hulu url
+ *
+ * @param string $url
+ * @return string hash
+ */
+function videoembed_hulu_parse_url($url) {
+	// separate parsing embed url
+	if (strpos($url, 'embed') === false) {
+		return 1;
+	}
+
+	if (!preg_match('/(value="http:\/\/www\.hulu\.com\/embed\/)([a-zA-Z0-9_-]*)"(.*)/', $url, $matches)) {
+		//echo "malformed blip.tv url";
+		return 2;
 	}
 
 	$hash = $matches[2];
@@ -716,5 +779,6 @@ function videoembed_teachertube_parse_url($url) {
 
 	return $hash;
 }
+
 
 ?>
