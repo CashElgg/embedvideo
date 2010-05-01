@@ -331,7 +331,7 @@
     //echo $path; 
    
     // forces rest of url to start with "?docid=", followed by hash, and rest of options start with &    
-    if (!preg_match('/^(\?docid=)([0-9-]*)(&.*)?$/',$path, $matches))
+    if (!preg_match('/^(\?docid=)([0-9-]*)#?(&.*)?$/',$path, $matches))
     {
       //echo "bad hash";
       return;        
