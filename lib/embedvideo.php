@@ -512,7 +512,7 @@ function videoembed_veoh_parse_url($url) {
 		return videoembed_veoh_parse_embed($url);
 	}
 
-	if (!preg_match('/(http:\/\/www\.veoh\.com\/.*\/#watch%3D)([0-9a-zA-Z]*)/', $url, $matches)) {
+	if (!preg_match('/(http:\/\/www\.veoh\.com\/.*\/videos#watch%3D)([0-9a-zA-Z]*)/', $url, $matches)) {
 		//echo "malformed veoh url";
 		return;
 	}
@@ -531,12 +531,12 @@ function videoembed_veoh_parse_url($url) {
  * @return string hash
  */
 function videoembed_veoh_parse_embed($url) {
-	if (!preg_match('/(src="http:\/\/)(www\.)?(veoh\.com\/veohplayer.swf\?permalinkId=)([a-zA-Z0-9]*)/', $url, $matches)) {
+	if (!preg_match('/(src="http:\/\/)(www\.)?(veoh\.com\/static\/swf\/webplayer\/WebPlayer\.swf\?version=)([0-9a-zA-Z.]*)&permalinkId=([a-zA-Z0-9]*)&(.*)/', $url, $matches)) {
 		//echo "malformed embed veoh url";
 		return;
 	}
 
-	$hash   = $matches[4];
+	$hash   = $matches[5];
 	//echo $hash;
 
 	return $hash;
