@@ -312,8 +312,6 @@ function videoembed_google_parse_url($url) {
 	return $hash;
 }
 
-// <embed id=VideoPlayback src=http://video.google.com/googleplayer.swf?docid=-6426224583918141996&hl=en&fs=true style=width:400px;height:326px allowFullScreen=true allowScriptAccess=always type=application/x-shockwave-flash> </embed>
-
 /**
  * parse google embed code
  *
@@ -448,7 +446,7 @@ function videoembed_metacafe_parse_url($url) {
 		return videoembed_metacafe_parse_embed($url);
 	}
 
-	if (!preg_match('/(http:\/\/)(www\.)?(metacafe\.com\/watch\/)([0-9]*)(\/[0-9a-zA-Z_-]*)(\/)/', $url, $matches)) {
+	if (!preg_match('/(http:\/\/)(www\.)?(metacafe\.com\/watch\/)([0-9a-zA-Z_-]*)(\/[0-9a-zA-Z_-]*)(\/)/', $url, $matches)) {
 		//echo "malformed metacafe group url";
 		return;
 	}
