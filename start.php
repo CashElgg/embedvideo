@@ -41,6 +41,7 @@ function embedvideo_log_listener($event, $object_type, $object) {
 			// only log when url has been changed
 			if (isset($object->url) && $object->url_hash != md5($object->url)) {
 				if (!isset($catch_double)) {
+					remove_from_river_by_object($object->guid);
 					add_to_river('river/object/widget/embedvideo/update', 'embedvideo', get_loggedin_userid(), $object->guid);
 				}
 
@@ -53,10 +54,8 @@ function embedvideo_log_listener($event, $object_type, $object) {
 }
 
 
-register_elgg_event_handler('init','system','embedvideo_init');
+register_elgg_event_handler('init', 'system', 'embedvideo_init');
 
 if (function_exists('add_to_river')) {
-	register_elgg_event_handler('all','all','embedvideo_log_listener');
+	register_elgg_event_handler('all', 'all', 'embedvideo_log_listener');
 }
-
-?>

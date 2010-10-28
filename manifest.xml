@@ -2,7 +2,7 @@
 <plugin_manifest>
         <field key="author" value="Cash Costello" />
         <field key="version" value="0.9" />
-        <field key="description" value="Embed Flash Videos" />
+        <field key="description" value="Widget for embedding Flash videos" />
         <field key="website" value="http://www.cashcostello.com/" />
         <field key="licence" value="GNU General Public License version 2" />
         <field key="copyright" value="Cash Costello 2009-2010" />
