@@ -8,7 +8,7 @@ $english = array(
 		'embedvideo:comment' => 'Comment',
 		'embedvideo:description' => 'Add video from sites like youtube to your profile',
 		'embedvideo:width' => 'Video Width',
-		'embedvideo:sites' => 'youtube, hulu, vimeo, google, metacafe, veoh, daily motion, blip.tv',
+		'embedvideo:sites' => 'youtube, hulu, vimeo, metacafe, daily motion, blip.tv',
 		'embedvideo:tags_instruct' => ' (html tags are allowed)',
 
 		'embedvideo:novideo' => 'No video set',
