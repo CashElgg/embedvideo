@@ -1,10 +1,12 @@
 <?php
-
 /**
  * Embedded Video Plugin
  *
+ * @author Cash Costello
+ * @license GPL2
  */
 
+register_elgg_event_handler('init', 'system', 'embedvideo_init');
 
 function embedvideo_init() {
 	global $CONFIG;
@@ -14,8 +16,9 @@ function embedvideo_init() {
 	add_widget_type('embedvideo', elgg_echo('embedvideo:widget'), elgg_echo('embedvideo:description'), 'profile', true);
 
 	extend_view('css','embedvideo/css');
-}
 
+	register_elgg_event_handler('all', 'all', 'embedvideo_log_listener');
+}
 
 
 function embedvideo_frontpage() {
@@ -30,8 +33,7 @@ function embedvideo_frontpage() {
 }
 
 
-
-// head off the default log listener and only log
+// head off the default log listener and only log new videos once
 function embedvideo_log_listener($event, $object_type, $object) {
 
 	static $catch_double;
@@ -51,11 +53,4 @@ function embedvideo_log_listener($event, $object_type, $object) {
 	}
 
 	return true;
-}
-
-
-register_elgg_event_handler('init', 'system', 'embedvideo_init');
-
-if (function_exists('add_to_river')) {
-	register_elgg_event_handler('all', 'all', 'embedvideo_log_listener');
 }
