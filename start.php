@@ -6,35 +6,45 @@
  * @license GPL2
  */
 
-register_elgg_event_handler('init', 'system', 'embedvideo_init');
+elgg_register_event_handler('init', 'system', 'embedvideo_init');
 
 function embedvideo_init() {
-	global $CONFIG;
 
-	include $CONFIG->pluginspath . 'embedvideo/lib/embedvideo.php';
+	elgg_register_library('embedvideo', elgg_get_plugins_path() . 'embedvideo/lib/embedvideo.php');
+	elgg_load_library('embedvideo');
 
-	add_widget_type('embedvideo', elgg_echo('embedvideo:widget'), elgg_echo('embedvideo:description'), 'profile', true);
+	elgg_register_widget_type('embedvideo', elgg_echo('embedvideo:widget'), elgg_echo('embedvideo:description'), 'profile', true);
 
-	extend_view('css','embedvideo/css');
+	elgg_extend_view('css/elgg','embedvideo/css');
 
-	register_elgg_event_handler('all', 'all', 'embedvideo_log_listener');
+	elgg_register_event_handler('all', 'all', 'embedvideo_log_listener');
 }
 
-
+/**
+ * Get the HTML for displaying a video on the front page
+ * 
+ * @return string
+ */
 function embedvideo_frontpage() {
-	$url   = get_plugin_setting('front_url', 'embedvideo');
-	$width = get_plugin_setting('front_width', 'embedvideo');
+	$url   = elgg_get_plugin_setting('front_url', 'embedvideo');
+	$width = elgg_get_plugin_setting('front_width', 'embedvideo');
 
 	if (!isset($width) || !is_numeric($width) || $width < 0) {
-		$width = 400; // if bad width, set default to 400 (seems a reasonable width)
+		$width = 452;
 	}
 
 	return videoembed_create_embed_object($url, 0, $width);
 }
 
-
-// head off the default log listener and only log new videos once
-function embedvideo_log_listener($event, $object_type, $object) {
+/**
+ * Add a river entry for new videos
+ *
+ * @param string     $event
+ * @param string     $type
+ * @param ElggEntity $object
+ * @return bool
+ */
+function embedvideo_log_listener($event, $type, $object) {
 
 	static $catch_double;
 
@@ -43,8 +53,8 @@ function embedvideo_log_listener($event, $object_type, $object) {
 			// only log when url has been changed
 			if (isset($object->url) && $object->url_hash != md5($object->url)) {
 				if (!isset($catch_double)) {
-					remove_from_river_by_object($object->guid);
-					add_to_river('river/object/widget/embedvideo/update', 'embedvideo', get_loggedin_userid(), $object->guid);
+					elgg_delete_river(array('object_guid' => $object->guid));
+					add_to_river('river/object/widget/embedvideo/update', 'embedvideo', elgg_get_logged_in_user_guid(), $object->guid);
 				}
 
 				$catch_double = true;

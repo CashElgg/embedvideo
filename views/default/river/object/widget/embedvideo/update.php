@@ -1,25 +1,26 @@
 <?php
-if (function_exists('add_to_river')) {
-	$performed_by = get_entity($vars['item']->subject_guid);
-	$widget       = get_entity($vars['item']->object_guid);
+/**
+ * Video embed widget
+ */
 
-	$url = "<a href=\"{$performed_by->getURL()}\">{$performed_by->name}</a>";
-	$string = sprintf(elgg_echo("embedvideo:river:updated"), $url);
-	if (isset($widget->videotitle)) {
-		$string .= ': ' . $widget->videotitle;
-	}
+$subject = $vars['item']->getSubjectEntity();
+$widget = $vars['item']->getObjectEntity();
 
-	echo $string;
-} else {
-	// Elgg 1.2 code could be put here, but it will be double echoed due to bug
-	// in elgg core so we will keep it out
-	/*
-    $statement = $vars['statement'];
-    $performed_by = $statement->getSubject();
-  
-    $url = "<a href=\"{$performed_by->getURL()}\">{$performed_by->name}</a>";
-    $string = sprintf(elgg_echo("embedvideo:river:updated"),$url);
+$subject_link = elgg_view('output/url', array(
+	'href' => $subject->getURL(),
+	'text' => $subject->name,
+	'class' => 'elgg-river-subject',
+	'is_trusted' => true,
+));
 
-    echo $string;
-	*/
+$string = elgg_echo('river:embedvideo:object:widget', array($subject_link));
+
+if (isset($widget->videotitle)) {
+	$title = '<em>' . $widget->videotitle . '</em>';
+	$string .= ' ' . elgg_echo('embedvideo:river:title', array($title));
 }
+
+echo elgg_view('river/elements/layout', array(
+	'item' => $vars['item'],
+	'summary' => $string,
+));

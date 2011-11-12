@@ -1,30 +1,48 @@
 <?php
-
 /**
- * embed video widget edit page
+ * Embed video widget edit page
  */
 
-global $CONFIG;
+$guid = $vars['entity']->guid;
 
-$sites_supported = $CONFIG->wwwroot . 'mod/embedvideo/graphics/sites_supported.png';
-$url_hash = md5($vars['entity']->url);
+echo elgg_view('input/hidden', array(
+	'name' => 'params[url_hash]',
+	'value' => md5($vars['entity']->url),
+));
 
-?>
-<div style='text-align: center; margin:0 0 10px 0;'><img src="<?php echo $sites_supported; ?>" alt="<?php echo elgg_echo('embedvideo:sites'); ?>" title="<?php echo elgg_echo('embedvideo:sites'); ?>"/></div>
-<p>
-    <input type="hidden" name="params[url_hash]" id="params[url_hash]" value="<?php echo $url_hash; ?>" /> 
-	<?php echo elgg_echo('embedvideo:url'); ?><br />
-    <input onclick="this.select();" type="text" name="params[url]" style="width: 96%;" value="<?php echo htmlentities($vars['entity']->url); ?>" class="input-text" />
-</p>
+echo '<div>';
+echo elgg_view('output/url', array(
+	'text' => 'Supported sites',
+	'href' => "#embedvideo-sites-$guid",
+	'rel' => 'toggle',
+));
+echo "<div class=\"hidden mas pas elgg-border-plain\" id=\"embedvideo-sites-$guid\">";
+echo elgg_echo('embedvideo:sites');
+echo '</div>';
+echo '</div>';
 
-<p>
-	<?php echo elgg_echo('embedvideo:title'); ?><br />
-    <textarea class="input-textarea" name="params[videotitle]" style="height: 20px; width: 96%;" ><?php echo htmlentities($vars['entity']->videotitle); ?></textarea>
-</p>  
+echo '<div>';
+echo elgg_echo('embedvideo:url');
+echo elgg_view('input/text', array(
+	'name' => 'params[url]',
+	'value' => $vars['entity']->url,
+	'onclick' => 'this.select();',
+));
+echo '</div>';
 
-<p>
-	<?php echo elgg_echo('embedvideo:comment');
-echo elgg_echo('embedvideo:tags_instruct'); ?> <br />
-    <textarea class="input-textarea" name="params[comment]" style="height: 100px; width: 96%;" ><?php echo htmlentities($vars['entity']->comment); ?></textarea>
-</p>  
+echo '<div>';
+echo elgg_echo('embedvideo:title');
+echo elgg_view('input/text', array(
+	'name' => 'params[videotitle]',
+	'value' => $vars['entity']->videotitle,
+));
+echo '</div>';
 
+echo '<div>';
+echo elgg_echo('embedvideo:comment') . ' ' . elgg_echo('embedvideo:tags_instruct');
+echo elgg_view('input/plaintext', array(
+	'name' => 'params[comment]',
+	'value' => $vars['entity']->comment,
+	'style' => 'height: 6em;',
+));
+echo '</div>';
